@@ -1,0 +1,353 @@
+/** CSS RESET **/
+html,
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+ol,
+ul,
+li,
+pre,
+code,
+address,
+variable,
+form,
+fieldset,
+blockquote {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  vertical-align: baseline;
+  font-size: 100%;
+  font-weight: normal;
+}
+body {
+  line-height: 1;
+  font-family: "Open Sans", sans-serif;
+}
+address,
+caption,
+cite,
+code,
+dfn,
+th,
+var {
+  font-style: normal;
+  font-weight: normal;
+}
+td,
+th,
+caption {
+  font-weight: normal;
+  text-align: left;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+img,
+fieldset {
+  border: 0;
+}
+q:before,
+q:after {
+  content: '';
+}
+a img {
+  border: none;
+}
+ol ol {
+  list-style-type: upper-alpha;
+}
+ol ol ol {
+  list-style-type: lower-roman;
+}
+ol ol ol ol {
+  list-style-type: lower-alpha;
+}
+ul ul,
+ol ol,
+ul ol,
+ol ul {
+  margin: 0;
+}
+dl,
+dt,
+dd {
+  margin: 0;
+}
+strong {
+  font-weight: bold;
+}
+cite,
+em,
+i {
+  font-style: italic;
+  border: none;
+}
+a {
+  outline: none;
+}
+body {
+  line-height: 1;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  clear: both;
+  -ms-word-wrap: break-word;
+  word-wrap: break-word;
+}
+h1 {
+  padding: 10px 0 40px 0;
+}
+h2 {
+  padding: 10px 0 35px 0;
+}
+h3 {
+  padding: 5px 0 35px 0;
+}
+h4 {
+  padding: 5px 0 25px 0;
+}
+h5 {
+  padding: 5px 0 25px 0;
+}
+h6 {
+  font-weight: bold;
+  padding: 5px 0 25px 0;
+}
+p {
+  font-size: 18px;
+  line-height: 1.7;
+  -ms-word-wrap: break-word;
+  word-wrap: break-word;
+  margin-bottom: 25px;
+}
+ol {
+  padding-left: 25px;
+  list-style-type: decimal;
+  margin: 0 0 25px 0;
+}
+ul {
+  padding-left: 25px;
+  list-style-type: disc;
+  margin: 0 0 25px 0;
+}
+li {
+  font-size: 15px;
+  line-height: 1.5em;
+}
+dl {
+  padding: 0 0 25px 0;
+}
+dt {
+  font-weight: bold;
+}
+dd {
+  padding: 10px 0 18px 40px;
+  font-size: 14px;
+  line-height: 1.5em;
+}
+address {
+  font-size: 13px;
+  padding: 0 0 25px 0;
+  line-height: 1.3em;
+  letter-spacing: 1px;
+}
+big {
+  font-size: 140%;
+}
+ins {
+  padding: 0 3px;
+  text-decoration: underline;
+}
+del {
+  padding: 0 3px;
+  text-decoration: line-through;
+}
+q {
+  font-style: italic;
+  font-size: 14px;
+  letter-spacing: 1px;
+  line-height: 1.5em;
+}
+blockquote {
+  font-style: italic;
+  padding: 0 40px;
+  letter-spacing: 1px;
+}
+blockquote p {
+  font-size: 14px;
+}
+blockquote cite,
+blockquote em,
+blockquote i {
+  font-style: normal;
+}
+blockquote cite {
+  display: block;
+  float: right;
+  margin: 20px 0;
+  letter-spacing: 1px;
+}
+pre {
+  font-size: 15px;
+  line-height: 21px;
+  margin: 0 0 25px 0;
+  padding: 1.5em;
+  overflow: auto;
+}
+abbr,
+acronym,
+abbr[title],
+acronym[title] {
+  cursor: help;
+}
+sup,
+sub {
+  height: 0;
+  line-height: 1;
+  vertical-align: baseline;
+  position: relative;
+  font-size: 10px;
+}
+sup {
+  bottom: 1ex;
+}
+sub {
+  top: .5ex;
+}
+hr {
+  border: 0;
+  clear: both;
+  height: 1px;
+  margin-bottom: 25px;
+}
+var,
+tt,
+kbd,
+code {
+  padding-left: 3px;
+  padding-right: 3px;
+  font-size: 13px;
+  line-height: 21px;
+}
+img {
+  max-width: 100%;
+  height: auto;
+}
+.size-auto,
+.size-full,
+.size-large,
+.size-medium,
+.size-thumbnail {
+  max-width: 100%;
+  height: auto;
+}
+/*** Image Alignments ***/
+.alignleft,
+img.alignleft {
+  display: inline;
+  float: left;
+  margin-right: 22px;
+  margin-top: 9px;
+}
+.alignright,
+img.alignright {
+  display: inline;
+  float: right;
+  margin-left: 22px;
+  margin-top: 8px;
+}
+.aligncenter,
+img.aligncenter {
+  clear: both;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+.alignleft,
+.alignright,
+.aligncenter,
+img.alignleft,
+img.alignright,
+img.aligncenter {
+  margin-bottom: 10px;
+}
+.wp-caption {
+  border: none;
+  font-size: 12px;
+  line-height: 18px;
+  text-align: center;
+  margin-bottom: 15px;
+  padding: 4px;
+  padding-top: 6px;
+  max-width: 96%;
+}
+.wp-caption img {
+  border: 0 none;
+  margin: 0px;
+  height: auto;
+  max-width: 98.5%;
+  padding: 0;
+  width: auto;
+}
+.wp-caption p.wp-caption-text {
+  font-size: 11px;
+  line-height: 18px;
+  margin: 0;
+}
+a img.aligncenter {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+.gallery-caption {
+  margin: 0 0 5px;
+}
+.wp-smiley {
+  margin: 0;
+}
+body {
+  font-size: 16px;
+}
+p {
+  line-height: 1.6;
+}
+h1 {
+  font-size: 44px;
+}
+h2 {
+  font-size: 38px;
+}
+h3 {
+  font-size: 32px;
+}
+h4 {
+  font-size: 28px;
+}
+h5 {
+  font-size: 26px;
+}
+h6 {
+  font-size: 24px;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  padding-top: 0;
+}
+body.mce-content-body {
+    padding: 20px !important;
+}

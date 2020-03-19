@@ -1,0 +1,101 @@
+*** Tally Framework Changelog ***
+
+2015-02-03 - Version 0.8.9
+  * Update Font Awesome
+  * Update jQuery PrettyPhoto
+  * Update jQuery Easing
+  * Update jQuery Flexslider
+  * Update jQuery Tinynav
+  * Update Jquery WOW
+  * Improve the option loader
+  * Fix a small Issue of translation
+  * Update .OP file
+
+2015-01-06 - Version 0.8.8
+  * Improve Admin Notice
+  * Add Helpful Links
+  * Add Free Theme Notice
+
+2014-11-26 - Version 0.8.7
+  * Fix a Small CSS
+  * Change content width to 1100px
+  * Added theme setup norice
+
+2014-10-28 - Version 0.8.6.1
+  * Fix a Small Bug.
+
+2014-10-28 - Version 0.8.6
+  * Added option images
+  * Added option data loader
+  * Option Tree is now out side of the theme.
+  * TGM class is now active in the theme
+  * Update .PO file
+  * Improve code queality
+  * Improve Admin CSS
+  * Add all Custom CSS to dynamic.css.php file
+  * Remove Unused files
+  * Improve Load Speed
+  * Add RTL css
+  * change custom template name "template-" form "page-"
+	
+
+2014-09-28 - Version 0.8.5.1
+  * Improve Color option
+  * improve admin images
+  * Add WooCommerce Cat function
+  * Add WPML function
+  * Add Search bar function
+  * Improve file system of core
+  * Added preloader
+  * Update  Font Awesome
+  * Update Animate.css
+  * Update WOW JS
+  * Added  SmoothScroll
+  * Improve content output hook and make the system more simple
+  * Improve Code
+
+
+2014-08-28 - Version 0.8.3
+  * Rename Full Width Template
+
+2014-08-20 - Version 0.8.2
+  * Improve CSS design
+  * Added Blog Template
+  * Added Full width Template
+  * Improve Responsive Display 
+  * Added MR Image Resizer
+
+  * Added new function for image resizing
+  * Update languages .po file
+
+2014-08-03 - Version 0.8.1
+  * Change CLASS name of post entry.
+  * Remove "tally_article_class" filter, wordpress already have a filter for "post_class".
+  * Update color action with new class name.
+  * Add two new filters for enable or disable sidebar and sidebar alt.
+
+
+2014-08-01 - Version 0.8
+  * Remove index.html (as theme reviewer requested)
+  * Update the screenshot.png to 880x660 (as theme reviewer requested)
+
+
+2014-07-28 - Version 0.7.9
+  * CSS fix: remove line height form ul, ol and dl
+  * Add filter on page metabox pages.
+  * ADD two new footer widget columns.
+  * FIX a small css issue on admin.css
+  * Fix a "do_action" name
+  * Fix read more button issue and improve css
+
+
+2014-07-08 - Version 0.7.8
+  * Improve option color
+  * Bug fix for color option
+
+  * Bug fix for blog template query
+  * Improve Header CSS
+
+
+2014-06-23 - Version 0.7.7
+  * First Release!

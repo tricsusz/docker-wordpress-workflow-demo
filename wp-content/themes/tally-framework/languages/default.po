@@ -1,0 +1,1231 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: digita_taxdomain\n"
+"POT-Creation-Date: 2015-02-03 17:13+0600\n"
+"PO-Revision-Date: 2015-02-03 17:13+0600\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.6.10\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop;__;_e\n"
+"X-Poedit-Basepath: .\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-SearchPath-0: ..\n"
+
+#: ../comments.php:6
+msgid "This post is password protected. Enter the password to view comments."
+msgstr ""
+
+#: ../core/core.php:153
+msgid "Primary Sidebar"
+msgstr ""
+
+#: ../core/core.php:155
+msgid "Primary Sidebar Widgets"
+msgstr ""
+
+#: ../core/core.php:162
+msgid "Sidebar Alt"
+msgstr ""
+
+#: ../core/core.php:164
+msgid "Sidebar Widgets"
+msgstr ""
+
+#: ../core/core.php:171 ../core/core.php:173
+msgid "Footer Widget #1"
+msgstr ""
+
+#: ../core/core.php:182 ../core/core.php:184
+msgid "Footer Widget #2"
+msgstr ""
+
+#: ../core/core.php:192 ../core/core.php:194
+msgid "Footer Widget #3"
+msgstr ""
+
+#: ../core/core.php:202 ../core/core.php:204
+msgid "Footer Widget #4"
+msgstr ""
+
+#: ../core/core.php:211 ../core/core.php:213
+msgid "Footer Widget #5"
+msgstr ""
+
+#: ../core/core.php:220 ../core/core.php:222
+msgid "Footer Widget #6"
+msgstr ""
+
+#: ../core/includes/breadcrumb.php:24
+msgid "Home"
+msgstr ""
+
+#: ../core/includes/breadcrumb.php:399
+msgid "g:i a"
+msgstr ""
+
+#: ../core/includes/breadcrumb.php:402
+#, php-format
+msgid "Minute %1$s"
+msgstr ""
+
+#: ../core/includes/breadcrumb.php:402
+msgid "i"
+msgstr ""
+
+#: ../core/includes/breadcrumb.php:405
+msgid "g a"
+msgstr ""
+
+#: ../core/includes/breadcrumb.php:416 ../core/includes/breadcrumb.php:426
+#: ../core/includes/breadcrumb.php:435 ../core/includes/breadcrumb.php:446
+#: ../core/includes/breadcrumb.php:448 ../core/includes/breadcrumb.php:734
+msgid "Y"
+msgstr ""
+
+#: ../core/includes/breadcrumb.php:417 ../core/includes/breadcrumb.php:438
+#: ../core/includes/breadcrumb.php:440 ../core/includes/breadcrumb.php:738
+msgid "F"
+msgstr ""
+
+#: ../core/includes/breadcrumb.php:420 ../core/includes/breadcrumb.php:422
+#: ../core/includes/breadcrumb.php:742
+msgid "d"
+msgstr ""
+
+#: ../core/includes/breadcrumb.php:429 ../core/includes/breadcrumb.php:431
+#, php-format
+msgid "Week %1$s"
+msgstr ""
+
+#: ../core/includes/breadcrumb.php:457 ../core/includes/breadcrumb.php:459
+#, php-format
+msgid "Search results for &quot;%1$s&quot;"
+msgstr ""
+
+#: ../core/includes/breadcrumb.php:464
+msgid "404 Not Found"
+msgstr ""
+
+#: ../core/includes/breadcrumb.php:471 ../core/includes/breadcrumb.php:473
+#, php-format
+msgid "Page %d"
+msgstr ""
+
+#: ../core/includes/breadcrumb.php:496
+msgid "Members"
+msgstr ""
+
+#: ../core/includes/breadcrumb.php:505
+msgid "Personal"
+msgstr ""
+
+#: ../core/includes/breadcrumb.php:537 ../core/includes/breadcrumb.php:539
+#, php-format
+msgid "%s Directory"
+msgstr ""
+
+#: ../core/includes/breadcrumb.php:541
+msgid "Create an Account"
+msgstr ""
+
+#: ../core/includes/breadcrumb.php:543
+msgid "Activate your Account"
+msgstr ""
+
+#: ../core/includes/breadcrumb.php:547 ../core/includes/breadcrumb.php:550
+msgid "Create a Group"
+msgstr ""
+
+#: ../core/includes/breadcrumb.php:554
+msgid "Create a Blog"
+msgstr ""
+
+#: ../core/includes/breadcrumb.php:602 ../core/includes/breadcrumb.php:635
+#: ../core/includes/breadcrumb.php:650 ../core/includes/breadcrumb.php:678
+msgid "Edit"
+msgstr ""
+
+#: ../core/includes/breadcrumb.php:627
+msgid "Split"
+msgstr ""
+
+#: ../core/includes/breadcrumb.php:631
+msgid "Merge"
+msgstr ""
+
+#: ../core/includes/custom-functions.php:417
+#, php-format
+msgid "Page %s"
+msgstr ""
+
+#: ../core/includes/custom-functions.php:466
+msgid "Search Results"
+msgstr ""
+
+#: ../core/includes/custom-functions.php:468
+msgid "Not Found"
+msgstr ""
+
+#: ../core/includes/custom-functions.php:469
+msgid "Blog"
+msgstr ""
+
+#: ../core/includes/custom-functions.php:471
+msgid "Category Archive"
+msgstr ""
+
+#: ../core/includes/custom-functions.php:474
+msgid "Author Archive"
+msgstr ""
+
+#: ../core/includes/custom-functions.php:476
+msgid "Tag Archive"
+msgstr ""
+
+#: ../core/includes/custom-functions.php:477
+msgid "Yearly Archive"
+msgstr ""
+
+#: ../core/includes/custom-functions.php:478
+msgid "Monthly Archive"
+msgstr ""
+
+#: ../core/includes/custom-functions.php:479
+msgid "Daily Archive"
+msgstr ""
+
+#: ../core/includes/custom-functions.php:797
+#: ../core/includes/custom-functions.php:798
+msgid "Search"
+msgstr ""
+
+#: ../core/includes/custom-functions.php:868
+msgid "View your shopping cart"
+msgstr ""
+
+#: ../core/includes/recommended-plugin-list.php:42
+#: ../core/vandors/class-tgm-plugin-activation.php:161
+msgid "Install Required Plugins"
+msgstr ""
+
+#: ../core/includes/recommended-plugin-list.php:43
+#: ../core/vandors/class-tgm-plugin-activation.php:162
+msgid "Install Plugins"
+msgstr ""
+
+#: ../core/includes/recommended-plugin-list.php:44
+#: ../core/vandors/class-tgm-plugin-activation.php:163
+#, php-format
+msgid "Installing Plugin: %s"
+msgstr ""
+
+#: ../core/includes/recommended-plugin-list.php:45
+msgid "Something went wrong with the plugin API."
+msgstr ""
+
+#: ../core/includes/recommended-plugin-list.php:56
+#: ../core/vandors/class-tgm-plugin-activation.php:175
+msgid "Return to Required Plugins Installer"
+msgstr ""
+
+#: ../core/includes/recommended-plugin-list.php:57
+#: ../core/vandors/class-tgm-plugin-activation.php:177
+#: ../core/vandors/class-tgm-plugin-activation.php:1945
+msgid "Plugin activated successfully."
+msgstr ""
+
+#: ../core/includes/recommended-plugin-list.php:58
+#, php-format
+msgid "All plugins installed and activated successfully. %s"
+msgstr ""
+
+#: ../core/metaboxs/_m_blog-template.php:11
+msgid "Post Cayegory"
+msgstr ""
+
+#: ../core/metaboxs/_m_blog-template.php:12
+msgid "Select a Category to display posts in this page."
+msgstr ""
+
+#: ../core/metaboxs/_m_blog-template.php:23
+msgid "Post Limit"
+msgstr ""
+
+#: ../core/metaboxs/_m_blog-template.php:24
+msgid "How many post you want to display per page."
+msgstr ""
+
+#: ../core/metaboxs/_m_pages.php:13 ../core/options/_o_layout.php:27
+msgid "Enable TopBar Area"
+msgstr ""
+
+#: ../core/metaboxs/_m_pages.php:14
+msgid "Enable or Disable TopBar of this page / post."
+msgstr ""
+
+#: ../core/metaboxs/_m_pages.php:32 ../core/options/_o_layout.php:46
+msgid "Enable Header"
+msgstr ""
+
+#: ../core/metaboxs/_m_pages.php:33
+msgid "Enable or Disable Header of this page"
+msgstr ""
+
+#: ../core/metaboxs/_m_pages.php:51 ../core/options/_o_layout.php:64
+msgid "Enable SubHeader"
+msgstr ""
+
+#: ../core/metaboxs/_m_pages.php:52
+msgid "Enable or Disable SubHeader of this page"
+msgstr ""
+
+#: ../core/metaboxs/_m_pages.php:70
+msgid "Sidebar Layout"
+msgstr ""
+
+#: ../core/metaboxs/_m_pages.php:91
+msgid "Enable Comment Area"
+msgstr ""
+
+#: ../core/metaboxs/_m_pages.php:92
+msgid "Enable or Disable comment on this page / post."
+msgstr ""
+
+#: ../core/metaboxs/_m_pages.php:111 ../core/options/_o_layout.php:142
+msgid "Footer Widget Layout"
+msgstr ""
+
+#: ../core/metaboxs/_m_pages.php:112 ../core/options/_o_layout.php:143
+msgid ""
+"Select a <strong>Footer Widget</strong> layout. If you select the red cross "
+"no widget will display in footer"
+msgstr ""
+
+#: ../core/metaboxs/_m_pages.php:132 ../core/options/_o_layout.php:163
+msgid "Enable Custom Width"
+msgstr ""
+
+#: ../core/metaboxs/_m_pages.php:133 ../core/options/_o_layout.php:164
+msgid "Enable custom width for each footer widget column."
+msgstr ""
+
+#: ../core/metaboxs/_m_pages.php:144 ../core/options/_o_layout.php:175
+msgid "Footer 1st Widget Width"
+msgstr ""
+
+#: ../core/metaboxs/_m_pages.php:145 ../core/options/_o_layout.php:176
+msgid "width of the 1st widget column"
+msgstr ""
+
+#: ../core/metaboxs/_m_pages.php:159 ../core/options/_o_layout.php:190
+msgid "Footer 2nd Widget Width"
+msgstr ""
+
+#: ../core/metaboxs/_m_pages.php:160 ../core/options/_o_layout.php:191
+msgid "width of the 2st widget column"
+msgstr ""
+
+#: ../core/metaboxs/_m_pages.php:174 ../core/options/_o_layout.php:205
+msgid "Footer 3rd Widget Width"
+msgstr ""
+
+#: ../core/metaboxs/_m_pages.php:175 ../core/options/_o_layout.php:206
+msgid "width of the 3rd widget column"
+msgstr ""
+
+#: ../core/metaboxs/_m_pages.php:189 ../core/options/_o_layout.php:220
+msgid "Footer 4th Widget Width"
+msgstr ""
+
+#: ../core/metaboxs/_m_pages.php:190 ../core/options/_o_layout.php:221
+msgid "width of the 4th widget column"
+msgstr ""
+
+#: ../core/metaboxs/_m_pages.php:204 ../core/options/_o_layout.php:235
+msgid "Footer 5th Widget Width"
+msgstr ""
+
+#: ../core/metaboxs/_m_pages.php:205 ../core/options/_o_layout.php:236
+msgid "width of the 5th widget column"
+msgstr ""
+
+#: ../core/metaboxs/_m_pages.php:219 ../core/options/_o_layout.php:250
+msgid "Footer 6th Widget Width"
+msgstr ""
+
+#: ../core/metaboxs/_m_pages.php:220 ../core/options/_o_layout.php:251
+msgid "width of the 6th widget column"
+msgstr ""
+
+#: ../core/metaboxs/_m_pages.php:237
+msgid "Footer"
+msgstr ""
+
+#: ../core/metaboxs/_m_pages.php:238
+msgid "Enable or Disable Footer on this page / post."
+msgstr ""
+
+#: ../core/metaboxs/_m_post-formats.php:10
+msgid "OGG URL"
+msgstr ""
+
+#: ../core/metaboxs/_m_post-formats.php:20
+msgid "MP3 URL"
+msgstr ""
+
+#: ../core/metaboxs/_m_post-formats.php:30
+msgid "AUDIO URL (OEMBED) OR EMBED CODE"
+msgstr ""
+
+#: ../core/metaboxs/_m_post-formats.php:53
+msgid "Video URL (OEMBED) OR EMBED CODE"
+msgstr ""
+
+#: ../core/metaboxs/_m_post-formats.php:63
+msgid "Full URL of <strong>MP4</strong> video"
+msgstr ""
+
+#: ../core/metaboxs/_m_post-formats.php:64
+#: ../core/metaboxs/_m_post-formats.php:74
+#: ../core/metaboxs/_m_post-formats.php:84
+msgid "This is for hosted HTML5 video."
+msgstr ""
+
+#: ../core/metaboxs/_m_post-formats.php:73
+msgid "Full URL of <strong>OGV</strong> video"
+msgstr ""
+
+#: ../core/metaboxs/_m_post-formats.php:83
+msgid "Full URL of <strong>MOV</strong> video"
+msgstr ""
+
+#: ../core/metaboxs/_m_post-formats.php:106
+#: ../core/metaboxs/_m_post-formats.php:130
+msgid "Source URL"
+msgstr ""
+
+#: ../core/metaboxs/_m_post-formats.php:154
+msgid "Gallery"
+msgstr ""
+
+#: ../core/metaboxs/_m_post-formats.php:155
+msgid "Upload some image via Media uploder of this post"
+msgstr ""
+
+#: ../core/metaboxs/_m_post-formats.php:177
+msgid "Image"
+msgstr ""
+
+#: ../core/metaboxs/_m_post-formats.php:178
+msgid "Set an Image as Featured Image"
+msgstr ""
+
+#: ../core/metaboxs/_m_post-formats.php:200
+msgid "Status URL (OEMBED) OR EMBED CODE"
+msgstr ""
+
+#: ../core/options/_o_branding.php:9
+msgid "Site Logo"
+msgstr ""
+
+#: ../core/options/_o_branding.php:10
+msgid "Please Upload your site logo"
+msgstr ""
+
+#: ../core/options/_o_branding.php:23
+msgid "Site Logo (High-DPI)"
+msgstr ""
+
+#: ../core/options/_o_branding.php:24
+msgid ""
+"Please uplod another logo for retina view. It will be a bigger sige of your "
+"logo"
+msgstr ""
+
+#: ../core/options/_o_branding.php:36
+msgid "Favicon"
+msgstr ""
+
+#: ../core/options/_o_branding.php:37
+msgid "Please uplod a Favicon icon"
+msgstr ""
+
+#: ../core/options/_o_branding.php:50
+msgid "Site PreLoader"
+msgstr ""
+
+#: ../core/options/_o_branding.php:51
+msgid "Enable or Disable Site PreLoader"
+msgstr ""
+
+#: ../core/options/_o_colors.php:10
+msgid "Accent Color of The Site"
+msgstr ""
+
+#: ../core/options/_o_colors.php:23
+msgid "2nd Accent Color"
+msgstr ""
+
+#: ../core/options/_o_colors.php:37
+msgid "Site Body Background"
+msgstr ""
+
+#: ../core/options/_o_colors.php:66
+msgid "Headings color on Dark Background"
+msgstr ""
+
+#: ../core/options/_o_colors.php:67 ../core/options/_o_colors.php:109
+msgid ""
+"This font color will show on the dark background. For example your "
+"background color is balck and the text heading color need to be white"
+msgstr ""
+
+#: ../core/options/_o_colors.php:79
+msgid "Headings color on Light Background"
+msgstr ""
+
+#: ../core/options/_o_colors.php:80 ../core/options/_o_colors.php:122
+msgid ""
+"This font color will show on the light background. For example your "
+"background color is white and the text heading color need to be black"
+msgstr ""
+
+#: ../core/options/_o_colors.php:108
+msgid "Sub-Headings color on Dark Background"
+msgstr ""
+
+#: ../core/options/_o_colors.php:121
+msgid "sub-Headings color on Light Background"
+msgstr ""
+
+#: ../core/options/_o_colors.php:150
+msgid "Text color on Dark Background"
+msgstr ""
+
+#: ../core/options/_o_colors.php:151 ../core/options/_o_colors.php:192
+msgid ""
+"This font color will show on the dark background. For example your "
+"background color is balck and the text color need to be white"
+msgstr ""
+
+#: ../core/options/_o_colors.php:163
+msgid "Text color on Light Background"
+msgstr ""
+
+#: ../core/options/_o_colors.php:164 ../core/options/_o_colors.php:205
+msgid ""
+"This font color will show on the light background. For example your "
+"background color is white and the text color need to be black"
+msgstr ""
+
+#: ../core/options/_o_colors.php:191
+msgid "Meta Text color on Dark Background"
+msgstr ""
+
+#: ../core/options/_o_colors.php:204
+msgid "Meta Text color on Light Background"
+msgstr ""
+
+#: ../core/options/_o_colors.php:233
+msgid "Border color on Dark Background"
+msgstr ""
+
+#: ../core/options/_o_colors.php:234
+msgid ""
+"This border color will show on the dark background. For example your "
+"background color is balck and the border color need to be white"
+msgstr ""
+
+#: ../core/options/_o_colors.php:246
+msgid "Border color on Light Background"
+msgstr ""
+
+#: ../core/options/_o_colors.php:247
+msgid ""
+"This border color will show on the light background. For example your "
+"background color is white and the border color need to be black"
+msgstr ""
+
+#: ../core/options/_o_colors.php:275
+msgid "Light Background Color"
+msgstr ""
+
+#: ../core/options/_o_colors.php:276
+msgid "This will be a light color of background. Example: white (#ffffff)"
+msgstr ""
+
+#: ../core/options/_o_colors.php:288
+msgid "Dark Background Color"
+msgstr ""
+
+#: ../core/options/_o_colors.php:289
+msgid "This will be a bark color of background. Example: black (#000000)"
+msgstr ""
+
+#: ../core/options/_o_colors.php:316
+msgid "Inner Background color on Dark Background"
+msgstr ""
+
+#: ../core/options/_o_colors.php:317
+msgid ""
+"This will be a light color of inner background. Example: darker white "
+"(#f1f1f1)"
+msgstr ""
+
+#: ../core/options/_o_colors.php:329
+msgid "Inner Background color on Light Background"
+msgstr ""
+
+#: ../core/options/_o_colors.php:330
+msgid ""
+"This will be a dark color of inner background. Example: whiter black "
+"(#eeeeee)"
+msgstr ""
+
+#: ../core/options/_o_colors.php:359 ../core/options/_o_colors.php:406
+#: ../core/options/_o_colors.php:452 ../core/options/_o_colors.php:660
+#: ../core/options/_o_colors.php:707 ../core/options/_o_colors.php:754
+#: ../core/options/_o_colors.php:801
+msgid "Choose Font Color Mood"
+msgstr ""
+
+#: ../core/options/_o_colors.php:360 ../core/options/_o_colors.php:407
+#: ../core/options/_o_colors.php:453 ../core/options/_o_colors.php:661
+#: ../core/options/_o_colors.php:708 ../core/options/_o_colors.php:755
+#: ../core/options/_o_colors.php:802
+msgid ""
+"if background color is dark you will select light mood OR if the background "
+"color is dark you will select light mood"
+msgstr ""
+
+#: ../core/options/_o_colors.php:376
+msgid "Topbar Background"
+msgstr ""
+
+#: ../core/options/_o_colors.php:423
+msgid "Header Background"
+msgstr ""
+
+#: ../core/options/_o_colors.php:469
+msgid "Navigation area Background Color"
+msgstr ""
+
+#: ../core/options/_o_colors.php:482
+msgid "Navigation Text Color"
+msgstr ""
+
+#: ../core/options/_o_colors.php:483 ../core/options/_o_colors.php:524
+msgid "Simple text color of the navigation area"
+msgstr ""
+
+#: ../core/options/_o_colors.php:495
+msgid "Navigation Border Color"
+msgstr ""
+
+#: ../core/options/_o_colors.php:496 ../core/options/_o_colors.php:537
+msgid "Border color for each element in the navigation area"
+msgstr ""
+
+#: ../core/options/_o_colors.php:508
+msgid "Navigation Background Color"
+msgstr ""
+
+#: ../core/options/_o_colors.php:509 ../core/options/_o_colors.php:550
+msgid "background color of the navigation area"
+msgstr ""
+
+#: ../core/options/_o_colors.php:523
+msgid "Navigation Text Hover Color"
+msgstr ""
+
+#: ../core/options/_o_colors.php:536
+msgid "Navigation Border Hover Color"
+msgstr ""
+
+#: ../core/options/_o_colors.php:549
+msgid "Navigation Background Hover Color"
+msgstr ""
+
+#: ../core/options/_o_colors.php:564
+msgid "Navigation Submenu Text Color"
+msgstr ""
+
+#: ../core/options/_o_colors.php:577
+msgid "Navigation Submenu Border Color"
+msgstr ""
+
+#: ../core/options/_o_colors.php:590
+msgid "Navigation Submenu Background Color"
+msgstr ""
+
+#: ../core/options/_o_colors.php:604
+msgid "Navigation Submenu Hover Text Color"
+msgstr ""
+
+#: ../core/options/_o_colors.php:617
+msgid "Navigation Submenu Hover Border Color"
+msgstr ""
+
+#: ../core/options/_o_colors.php:630
+msgid "Navigation Submenu Hover Background Color"
+msgstr ""
+
+#: ../core/options/_o_colors.php:677
+msgid "Sub-Header Background"
+msgstr ""
+
+#: ../core/options/_o_colors.php:724
+msgid "Content Background"
+msgstr ""
+
+#: ../core/options/_o_colors.php:771
+msgid "Footer Widgets Background"
+msgstr ""
+
+#: ../core/options/_o_colors.php:819
+msgid "Footer Background"
+msgstr ""
+
+#: ../core/options/_o_fonts.php:10
+msgid "Enable Google Fonts"
+msgstr ""
+
+#: ../core/options/_o_fonts.php:11
+msgid "By selection NO the theme will use default fonts."
+msgstr ""
+
+#: ../core/options/_o_fonts.php:27
+msgid "Headings Google Font Link"
+msgstr ""
+
+#: ../core/options/_o_fonts.php:28 ../core/options/_o_fonts.php:54
+msgid ""
+"Ex: <code>link href=\"http://fonts.googleapis.com/css?family=Open"
+"+Sans:300,700,400\" rel=\"stylesheet\" type=\"text/css\"&gt;</code>"
+msgstr ""
+
+#: ../core/options/_o_fonts.php:40
+msgid "Headings Google Font Family"
+msgstr ""
+
+#: ../core/options/_o_fonts.php:41 ../core/options/_o_fonts.php:67
+msgid "Ex: font-family: \"Open Sans\", sans-serif;"
+msgstr ""
+
+#: ../core/options/_o_fonts.php:53
+msgid "Body Google Font Link"
+msgstr ""
+
+#: ../core/options/_o_fonts.php:66
+msgid "Body Google Font Family"
+msgstr ""
+
+#: ../core/options/_o_fonts.php:79
+msgid "H1 Font Size"
+msgstr ""
+
+#: ../core/options/_o_fonts.php:80
+msgid "This will be ths size of h1 heading tag Example <code>22px</code>"
+msgstr ""
+
+#: ../core/options/_o_fonts.php:92
+msgid "H2 Font Size"
+msgstr ""
+
+#: ../core/options/_o_fonts.php:93
+msgid "This will be ths size of h2 heading tag Example <code>22px</code>"
+msgstr ""
+
+#: ../core/options/_o_fonts.php:105
+msgid "H3 Font Size"
+msgstr ""
+
+#: ../core/options/_o_fonts.php:106
+msgid "This will be ths size of h3 heading tag Example <code>22px</code>"
+msgstr ""
+
+#: ../core/options/_o_fonts.php:118
+msgid "H4 Font Size"
+msgstr ""
+
+#: ../core/options/_o_fonts.php:119
+msgid "This will be ths size of h4 heading tag Example <code>22px</code>"
+msgstr ""
+
+#: ../core/options/_o_fonts.php:131
+msgid "H5 Font Size"
+msgstr ""
+
+#: ../core/options/_o_fonts.php:132
+msgid "This will be ths size of h5 heading tag Example <code>22px</code>"
+msgstr ""
+
+#: ../core/options/_o_fonts.php:144
+msgid "H6 Font Size"
+msgstr ""
+
+#: ../core/options/_o_fonts.php:145
+msgid "This will be ths size of h6 heading tag Example <code>22px</code>"
+msgstr ""
+
+#: ../core/options/_o_fonts.php:157
+msgid "Body Text Font Size"
+msgstr ""
+
+#: ../core/options/_o_fonts.php:158
+msgid "This will be ths size of Body Text. Example <code>12px</code>"
+msgstr ""
+
+#: ../core/options/_o_footer.php:10
+msgid "Footer Copyright Text"
+msgstr ""
+
+#: ../core/options/_o_footer.php:11
+msgid "This is the copyright text of footer"
+msgstr ""
+
+#: ../core/options/_o_header.php:10
+msgid "Enable Header sticky"
+msgstr ""
+
+#: ../core/options/_o_header.php:28
+msgid "Header height"
+msgstr ""
+
+#: ../core/options/_o_header.php:29
+msgid ""
+"This is the height of the site header <strong>Example: <code>52px</code></"
+"strong>"
+msgstr ""
+
+#: ../core/options/_o_header.php:41
+msgid "Top margin of the menu"
+msgstr ""
+
+#: ../core/options/_o_header.php:42
+msgid ""
+"This is the top margin of the header menu <strong>Example: <code>10px</"
+"code></strong>"
+msgstr ""
+
+#: ../core/options/_o_header.php:54
+msgid "Top margin of the Logo"
+msgstr ""
+
+#: ../core/options/_o_header.php:55
+msgid ""
+"This is the top margin of the header Logo <strong>Example: <code>52px</"
+"code></strong>"
+msgstr ""
+
+#: ../core/options/_o_header.php:68
+msgid "Topbar height"
+msgstr ""
+
+#: ../core/options/_o_header.php:69
+msgid ""
+"This is the height of the site topbar <strong>Example: <code>52px</code></"
+"strong>"
+msgstr ""
+
+#: ../core/options/_o_header.php:82
+msgid "Navigation height"
+msgstr ""
+
+#: ../core/options/_o_header.php:83
+msgid ""
+"This is the height of the site Navigation <strong>Example: <code>40px</"
+"code></strong>"
+msgstr ""
+
+#: ../core/options/_o_header.php:115
+msgid "Header Info Text"
+msgstr ""
+
+#: ../core/options/_o_header.php:130
+msgid "Header Phone Number"
+msgstr ""
+
+#: ../core/options/_o_header.php:145
+msgid "Header Email Address"
+msgstr ""
+
+#: ../core/options/_o_header.php:160
+msgid "Active Header Social Icons"
+msgstr ""
+
+#: ../core/options/_o_header.php:175
+msgid "Active Header WooCommerce Cart"
+msgstr ""
+
+#: ../core/options/_o_header.php:190
+msgid "Active Header WPML Menu"
+msgstr ""
+
+#: ../core/options/_o_header.php:205
+msgid "Header Advertisment Code"
+msgstr ""
+
+#: ../core/options/_o_header.php:220
+msgid "Active Header Search bar"
+msgstr ""
+
+#: ../core/options/_o_header.php:235
+msgid "Register Page URL"
+msgstr ""
+
+#: ../core/options/_o_header.php:236 ../core/options/_o_header.php:252
+msgid "include the full URL including <code>http://</code>"
+msgstr ""
+
+#: ../core/options/_o_header.php:251
+msgid "Login Page URL"
+msgstr ""
+
+#: ../core/options/_o_header.php:295
+msgid "header_1"
+msgstr ""
+
+#: ../core/options/_o_integration.php:9
+msgid "Custom CSS"
+msgstr ""
+
+#: ../core/options/_o_integration.php:22
+msgid "Custom JavaScript"
+msgstr ""
+
+#: ../core/options/_o_integration.php:35
+msgid "Google Analytics"
+msgstr ""
+
+#: ../core/options/_o_layout.php:9
+msgid "Site Layout"
+msgstr ""
+
+#: ../core/options/_o_layout.php:10
+msgid ""
+"Select the Site layout to <strong>Full Width</strong> or <strong>Box Layout</"
+"strong>"
+msgstr ""
+
+#: ../core/options/_o_layout.php:28
+msgid "Enable or Disable TopBar of the site"
+msgstr ""
+
+#: ../core/options/_o_layout.php:47
+msgid "Enable or Disable Header of the site"
+msgstr ""
+
+#: ../core/options/_o_layout.php:65
+msgid "Enable or Disable SubHeader of the site"
+msgstr ""
+
+#: ../core/options/_o_layout.php:84
+msgid "Default Sidebar Layout"
+msgstr ""
+
+#: ../core/options/_o_layout.php:85
+msgid "This is the global sidebar layout for all of the pages of the site."
+msgstr ""
+
+#: ../core/options/_o_layout.php:106
+msgid "Enable Comments on pages"
+msgstr ""
+
+#: ../core/options/_o_layout.php:107
+msgid ""
+"Enable or Disable comment on the page. This is the global setting. You can "
+"enable or disable on each page on page editing area."
+msgstr ""
+
+#: ../core/options/_o_layout.php:124
+msgid "Enable Comments on Posts"
+msgstr ""
+
+#: ../core/options/_o_layout.php:125
+msgid ""
+"Enable or Disable comment on the page. This is the global setting. You can "
+"enable or disable on each page on POst editing area."
+msgstr ""
+
+#: ../core/options/_o_layout.php:265
+msgid "Footer Layout"
+msgstr ""
+
+#: ../core/options/_o_layout.php:266
+msgid "Enable or Disable the footer of the site"
+msgstr ""
+
+#: ../core/options/_o_social-icons.php:8
+msgid "Enable Social Icons"
+msgstr ""
+
+#: ../core/options/_o_social-icons.php:26
+msgid "Social Icons"
+msgstr ""
+
+#: ../core/options/_o_social-icons.php:38
+msgid "Link"
+msgstr ""
+
+#: ../core/options/_o_social-icons.php:51
+msgid "Select a Icon"
+msgstr ""
+
+#: ../core/structure/_st_404.php:8
+msgid "This is somewhat embarrassing, isn&rsquo;t it?"
+msgstr ""
+
+#: ../core/structure/_st_404.php:9
+msgid "It looks like nothing was found at this location. Maybe try a search?"
+msgstr ""
+
+#: ../core/structure/_st_comments.php:15
+msgid "<h3>Comments</h3>"
+msgstr ""
+
+#: ../core/structure/_st_comments.php:67
+msgid "<h3>Trackbacks</h3>"
+msgstr ""
+
+#: ../core/structure/_st_post.php:77 ../core/structure/_st_post.php:330
+#, php-format
+msgid "Permalink to %s"
+msgstr ""
+
+#: ../core/structure/_st_post.php:97
+msgid "No Comments"
+msgstr ""
+
+#: ../core/structure/_st_post.php:98
+msgid "1 Comment"
+msgstr ""
+
+#: ../core/structure/_st_post.php:99
+msgid "Comments"
+msgstr ""
+
+#: ../core/structure/_st_post.php:116 ../core/structure/_st_post.php:125
+msgid "Read More"
+msgstr ""
+
+#: ../core/structure/_st_post.php:136
+msgid "Pages:"
+msgstr ""
+
+#: ../core/structure/_st_post.php:157
+msgid "Nothing Found"
+msgstr ""
+
+#: ../core/structure/_st_post.php:158
+msgid ""
+"It seems we can&rsquo;t find what you&rsquo;re looking for. Perhaps "
+"searching can help."
+msgstr ""
+
+#: ../core/structure/_st_post.php:194
+msgid "About"
+msgstr ""
+
+#: ../core/structure/_st_post.php:213
+msgid "Categories:"
+msgstr ""
+
+#: ../core/structure/_st_post.php:214
+msgid "Tags:"
+msgstr ""
+
+#: ../core/structure/_st_sidebar.php:11
+msgid "Primary Sidebar Widget Area"
+msgstr ""
+
+#: ../core/structure/_st_sidebar.php:24
+msgid "Secondary Sidebar Widget Area"
+msgstr ""
+
+#: ../core/structure/_st_sidebar.php:38
+#, php-format
+msgid ""
+"This is the %s. You can add content to this area by visiting your <a href="
+"\"%s\">Widgets Panel</a> and adding new widgets to this area."
+msgstr ""
+
+#: ../core/vandors/class-tgm-plugin-activation.php:164
+msgid "Something went wrong."
+msgstr ""
+
+#: ../core/vandors/class-tgm-plugin-activation.php:176
+msgid "Return to the dashboard"
+msgstr ""
+
+#: ../core/vandors/class-tgm-plugin-activation.php:178
+msgid "The following plugin was activated successfully:"
+msgstr ""
+
+#: ../core/vandors/class-tgm-plugin-activation.php:179
+#, php-format
+msgid "All plugins installed and activated successfully. %1$s"
+msgstr ""
+
+#: ../core/vandors/class-tgm-plugin-activation.php:180
+msgid "Dismiss this notice"
+msgstr ""
+
+#: ../core/vandors/class-tgm-plugin-activation.php:534
+#: ../core/vandors/class-tgm-plugin-activation.php:2162
+msgid "Return to the Dashboard"
+msgstr ""
+
+#: ../core/vandors/class-tgm-plugin-activation.php:1169
+msgid "Private Repository"
+msgstr ""
+
+#: ../core/vandors/class-tgm-plugin-activation.php:1172
+msgid "Pre-Packaged"
+msgstr ""
+
+#: ../core/vandors/class-tgm-plugin-activation.php:1177
+msgid "WordPress Repository"
+msgstr ""
+
+#: ../core/vandors/class-tgm-plugin-activation.php:1180
+msgid "Required"
+msgstr ""
+
+#: ../core/vandors/class-tgm-plugin-activation.php:1180
+msgid "Recommended"
+msgstr ""
+
+#: ../core/vandors/class-tgm-plugin-activation.php:1183
+msgid "Not Installed"
+msgstr ""
+
+#: ../core/vandors/class-tgm-plugin-activation.php:1185
+msgid "Installed But Not Activated"
+msgstr ""
+
+#: ../core/vandors/class-tgm-plugin-activation.php:1290
+#: ../core/vandors/class-tgm-plugin-activation.php:1398
+msgid "Install"
+msgstr ""
+
+#: ../core/vandors/class-tgm-plugin-activation.php:1312
+#: ../core/vandors/class-tgm-plugin-activation.php:1399
+msgid "Activate"
+msgstr ""
+
+#: ../core/vandors/class-tgm-plugin-activation.php:1361
+#, php-format
+msgid ""
+"No plugins to install or activate. <a href=\"%1$s\" title=\"Return to the "
+"Dashboard\">Return to the Dashboard</a>"
+msgstr ""
+
+#: ../core/vandors/class-tgm-plugin-activation.php:1377
+msgid "Plugin"
+msgstr ""
+
+#: ../core/vandors/class-tgm-plugin-activation.php:1378
+msgid "Source"
+msgstr ""
+
+#: ../core/vandors/class-tgm-plugin-activation.php:1379
+msgid "Type"
+msgstr ""
+
+#: ../core/vandors/class-tgm-plugin-activation.php:1380
+msgid "Status"
+msgstr ""
+
+#: ../core/vandors/class-tgm-plugin-activation.php:1928
+msgid "Install package not available."
+msgstr ""
+
+#: ../core/vandors/class-tgm-plugin-activation.php:1929
+#, php-format
+msgid "Downloading install package from <span class=\"code\">%s</span>&#8230;"
+msgstr ""
+
+#: ../core/vandors/class-tgm-plugin-activation.php:1930
+msgid "Unpacking the package&#8230;"
+msgstr ""
+
+#: ../core/vandors/class-tgm-plugin-activation.php:1931
+msgid "Installing the plugin&#8230;"
+msgstr ""
+
+#: ../core/vandors/class-tgm-plugin-activation.php:1932
+msgid "Plugin install failed."
+msgstr ""
+
+#: ../core/vandors/class-tgm-plugin-activation.php:1933
+msgid "Plugin installed successfully."
+msgstr ""
+
+#: ../core/vandors/class-tgm-plugin-activation.php:1944
+msgid "Plugin activation failed."
+msgstr ""
+
+#: ../core/vandors/class-tgm-plugin-activation.php:2058
+msgid ""
+"The installation and activation process is starting. This process may take a "
+"while on some hosts, so please be patient."
+msgstr ""
+
+#: ../core/vandors/class-tgm-plugin-activation.php:2059
+#, php-format
+msgid "%1$s installed and activated successfully."
+msgstr ""
+
+#: ../core/vandors/class-tgm-plugin-activation.php:2059
+#: ../core/vandors/class-tgm-plugin-activation.php:2068
+msgid "Show Details"
+msgstr ""
+
+#: ../core/vandors/class-tgm-plugin-activation.php:2059
+#: ../core/vandors/class-tgm-plugin-activation.php:2068
+msgid "Hide Details"
+msgstr ""
+
+#: ../core/vandors/class-tgm-plugin-activation.php:2060
+msgid "All installations and activations have been completed."
+msgstr ""
+
+#: ../core/vandors/class-tgm-plugin-activation.php:2061
+#, php-format
+msgid "Installing and Activating Plugin %1$s (%2$d/%3$d)"
+msgstr ""
+
+#: ../core/vandors/class-tgm-plugin-activation.php:2065
+msgid ""
+"The installation process is starting. This process may take a while on some "
+"hosts, so please be patient."
+msgstr ""
+
+#: ../core/vandors/class-tgm-plugin-activation.php:2066
+#, php-format
+msgid "An error occurred while installing %1$s: <strong>%2$s</strong>."
+msgstr ""
+
+#: ../core/vandors/class-tgm-plugin-activation.php:2067
+#, php-format
+msgid "The installation of %1$s failed."
+msgstr ""
+
+#: ../core/vandors/class-tgm-plugin-activation.php:2068
+#, php-format
+msgid "%1$s installed successfully."
+msgstr ""
+
+#: ../core/vandors/class-tgm-plugin-activation.php:2069
+msgid "All installations have been completed."
+msgstr ""
+
+#: ../core/vandors/class-tgm-plugin-activation.php:2070
+#, php-format
+msgid "Installing Plugin %1$s (%2$d/%3$d)"
+msgstr ""

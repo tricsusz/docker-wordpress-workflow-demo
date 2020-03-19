@@ -1,0 +1,117 @@
+body #option-tree-settings-api > .ui-tabs{  
+-webkit-box-shadow: inset 205px 0 0 #f1f1f1, inset 206px 0 0 #ccc, 0 1px 3px rgba(0,0,0,0.05);
+-moz-box-shadow: inset 205px 0 0 #f1f1f1, inset 206px 0 0 #ccc, 0 1px 3px rgba(0,0,0,0.05);
+box-shadow: inset 205px 0 0 #f1f1f1, inset 206px 0 0 #ccc, 0 1px 3px rgba(0,0,0,0.05);
+}
+body .wrap.settings-wrap .ui-tabs-nav{
+	width:210px;
+}
+
+.tally-ot-section{  padding:5px 20px; display:block; text-align:center; margin-bottom:0px; }
+.tally-ot-section h2{ color:#FFF; }
+.ot-background-group { padding-top: 5px; }
+.option-tree-setting .format-settings {margin-bottom: 30px;}
+.option-tree-setting .format-setting-label { margin: 0 0 10px 0; }
+.option-tree-ui-colorpicker-input-wrap .wp-picker-container, .wp-picker-container:active{ padding-top:3px; }
+
+/*---headings---*/
+#setting_color_block_headings.format-settings .format-setting-wrap{ padding:0; background:#565656; }
+#setting_color_headings_light.format-settings .format-setting-wrap,
+#setting_color_headings_dark.format-settings .format-setting-wrap{ border-left:solid 5px #565656; border-right:solid 5px #565656; margin-bottom:0px; padding:20px; }
+#setting_color_headings_dark.format-settings .format-setting-wrap{ border-bottom:solid 5px #565656; margin-bottom:30px; }
+
+/*---sub headings---*/
+#setting_color_block_subheading.format-settings .format-setting-wrap{ padding:0; background:#898989; }
+#setting_color_subheading_light.format-settings .format-setting-wrap,
+#setting_color_subheading_dark.format-settings .format-setting-wrap{ border-left:solid 5px #898989; border-right:solid 5px #898989; margin-bottom:0px; padding:20px; }
+#setting_color_subheading_dark.format-settings .format-setting-wrap{ border-bottom:solid 5px #898989; margin-bottom:30px; }
+
+/*---text---*/
+#setting_color_block_text.format-settings .format-setting-wrap{ padding:0; background:#dd3333; }
+#setting_color_text_light.format-settings .format-setting-wrap,
+#setting_color_text_dark.format-settings .format-setting-wrap{ border-left:solid 5px #dd3333; border-right:solid 5px #dd3333; margin-bottom:0px; padding:20px; }
+#setting_color_text_dark.format-settings .format-setting-wrap{ border-bottom:solid 5px #dd3333; margin-bottom:30px; }
+
+/*---meta---*/
+#setting_color_block_meta.format-settings .format-setting-wrap{ padding:0; background:#dd8080; }
+#setting_color_meta_light.format-settings .format-setting-wrap,
+#setting_color_meta_dark.format-settings .format-setting-wrap{ border-left:solid 5px #dd8080; border-right:solid 5px #dd8080; margin-bottom:0px; padding:20px; }
+#setting_color_meta_dark.format-settings .format-setting-wrap{ border-bottom:solid 5px #dd8080; margin-bottom:30px; }
+
+/*---border---*/
+#setting_color_block_border.format-settings .format-setting-wrap{ padding:0; background:#dd9933; }
+#setting_color_border_light.format-settings .format-setting-wrap,
+#setting_color_border_dark.format-settings .format-setting-wrap{ border-left:solid 5px #dd9933; border-right:solid 5px #dd9933; margin-bottom:0px; padding:20px; }
+#setting_color_border_dark.format-settings .format-setting-wrap{ border-bottom:solid 5px #dd9933; margin-bottom:30px; }
+
+/*---background---*/
+#setting_color_block_bg.format-settings .format-setting-wrap{ padding:0; background:#1e73be; }
+#setting_color_bg_light.format-settings .format-setting-wrap,
+#setting_color_bg_dark.format-settings .format-setting-wrap{ border-left:solid 5px #1e73be; border-right:solid 5px #1e73be; margin-bottom:0px; padding:20px; }
+#setting_color_bg_dark.format-settings .format-setting-wrap{ border-bottom:solid 5px #1e73be; margin-bottom:30px; }
+
+/*---inner background---*/
+#setting_color_block_inner_bg.format-settings .format-setting-wrap{ padding:0; background:#6190bf; }
+#setting_color_inner_bg_light.format-settings .format-setting-wrap,
+#setting_color_inner_bg_dark.format-settings .format-setting-wrap{ border-left:solid 5px #6190bf; border-right:solid 5px #6190bf; margin-bottom:0px; padding:20px; }
+#setting_color_inner_bg_dark.format-settings .format-setting-wrap{ border-bottom:solid 5px #6190bf; margin-bottom:30px; }
+
+/*---Topbar---*/
+#setting_color_block_topbar.format-settings .format-setting-wrap{ padding:0; background:#A1AA35; }
+#setting_color_topbar_mood.format-settings .format-setting-wrap,
+#setting_color_topbar_bg.format-settings .format-setting-wrap{ border-left:solid 5px #A1AA35; border-right:solid 5px #A1AA35; margin-bottom:0px; padding:20px; }
+#setting_color_topbar_bg.format-settings .format-setting-wrap{ border-bottom:solid 5px #A1AA35; margin-bottom:30px; }
+
+
+/*---Header---*/
+#setting_color_block_header.format-settings .format-setting-wrap{ padding:0; background:#333; }
+#setting_color_header_mood.format-settings .format-setting-wrap,
+#setting_color_header_bg.format-settings .format-setting-wrap{ border-left:solid 5px #333; border-right:solid 5px #333; margin-bottom:0px; padding:20px; }
+#setting_color_header_bg.format-settings .format-setting-wrap{ border-bottom:solid 5px #333; margin-bottom:30px; }
+
+
+/*---navigation---*/
+#setting_color_block_navigation.format-settings .format-setting-wrap{ padding:0; background:#3BCED5; }
+#setting_color_navigation_text.format-settings .format-setting-wrap,
+#setting_color_navigation_border.format-settings .format-setting-wrap,
+#setting_color_navigation_bg.format-settings .format-setting-wrap,
+#setting_color_navigation_text_hover.format-settings .format-setting-wrap,
+#setting_color_navigation_border_hover.format-settings .format-setting-wrap,
+#setting_color_navigation_bg_hover.format-settings .format-setting-wrap,
+#setting_color_navigation_submenu_bg.format-settings .format-setting-wrap,
+#setting_color_navigation_submenu_hover_bg.format-settings .format-setting-wrap,
+#setting_color_navigation_submenu_hover_text.format-settings .format-setting-wrap,
+#setting_color_navigation_submenu_border.format-settings .format-setting-wrap,
+#setting_color_navigation_submenu_text.format-settings .format-setting-wrap,
+#setting_color_navigation_area_background_color.format-settings .format-setting-wrap,
+#setting_color_navigation_area_mood.format-settings .format-setting-wrap,
+#setting_color_navigation_submenu_hover_border.format-settings .format-setting-wrap{ border-left:solid 5px #3BCED5; border-right:solid 5px #3BCED5; margin-bottom:0px; padding:20px; }
+#setting_color_navigation_submenu_hover_bg.format-settings .format-setting-wrap{ border-bottom:solid 5px #3BCED5; margin-bottom:30px; }
+
+
+/*---Sub Header---*/
+#setting_color_block_subheader.format-settings .format-setting-wrap{ padding:0; background:#903; }
+#setting_color_subheader_mood.format-settings .format-setting-wrap,
+#setting_color_subheader_bg.format-settings .format-setting-wrap{ border-left:solid 5px #903; border-right:solid 5px #903; margin-bottom:0px; padding:20px; }
+#setting_color_subheader_bg.format-settings .format-setting-wrap{ border-bottom:solid 5px #903; margin-bottom:30px; }
+
+
+/*---Main Content---*/
+#setting_color_block_content.format-settings .format-setting-wrap{ padding:0; background:#690; }
+#setting_color_content_mood.format-settings .format-setting-wrap,
+#setting_color_content_bg.format-settings .format-setting-wrap{ border-left:solid 5px #690; border-right:solid 5px #690; margin-bottom:0px; padding:20px; }
+#setting_color_content_bg.format-settings .format-setting-wrap{ border-bottom:solid 5px #690; margin-bottom:30px; }
+
+
+/*---Footer widgets Content---*/
+#setting_color_block_fwidget.format-settings .format-setting-wrap{ padding:0; background:#069; }
+#setting_color_fwidget_mood.format-settings .format-setting-wrap,
+#setting_color_fwidget_bg.format-settings .format-setting-wrap{ border-left:solid 5px #069; border-right:solid 5px #069; margin-bottom:0px; padding:20px; }
+#setting_color_fwidget_bg.format-settings .format-setting-wrap{ border-bottom:solid 5px #069; margin-bottom:30px; }
+
+
+/*---Footer Content---*/
+#setting_color_block_footer.format-settings .format-setting-wrap{ padding:0; background:#90C; }
+#setting_color_footer_mood.format-settings .format-setting-wrap,
+#setting_color_footer_bg.format-settings .format-setting-wrap{ border-left:solid 5px #90C; border-right:solid 5px #90C; margin-bottom:0px; padding:20px; }
+#setting_color_footer_bg.format-settings .format-setting-wrap{ border-bottom:solid 5px #90C; margin-bottom:30px; }

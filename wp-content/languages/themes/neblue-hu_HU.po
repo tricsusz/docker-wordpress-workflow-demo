@@ -1,0 +1,670 @@
+# Translation of NEBlue in Hungarian
+# This file is distributed under the same license as the NEBlue package.
+msgid ""
+msgstr ""
+"PO-Revision-Date: 2015-08-29 19:18:25+0000\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: GlotPress/1.1.0-alpha\n"
+"Project-Id-Version: NEBlue\n"
+
+#. Description of the plugin/theme
+msgid "NEBlue is an elegant blog theme with responsive and easily customizable."
+msgstr ""
+
+#. Theme Name of the plugin/theme
+msgid "NEBlue"
+msgstr ""
+
+#: searchform.php:8
+msgctxt "label"
+msgid "Search for:"
+msgstr "Keresés:"
+
+#: searchform.php:8
+msgctxt "placeholder"
+msgid "Search&hellip;"
+msgstr ""
+
+#: search.php:16
+msgid "Search Results for: %s"
+msgstr "%s kifejezésre történő keresés eredménye"
+
+#: options.php:300
+msgid "About NEBlue"
+msgstr ""
+
+#: options.php:302
+msgid "View Demo"
+msgstr "Demo megtekintése"
+
+#: options.php:281
+msgid "Flickr"
+msgstr "Flickr"
+
+#: options.php:267
+msgid "LinkedIn"
+msgstr "LinkedIn"
+
+#: options.php:274
+msgid "Tumblr"
+msgstr "Tumblr"
+
+#: options.php:260
+msgid "Pinterest"
+msgstr "Pinterest"
+
+#: options.php:246
+msgid "YouTube"
+msgstr "YouTube"
+
+#: options.php:253
+msgid "Instagram"
+msgstr "Instagram"
+
+#: options.php:239
+msgid "Google Plus"
+msgstr "Google plusz"
+
+#: options.php:232
+msgid "Twitter"
+msgstr "Twitter"
+
+#: options.php:225
+msgid "Facebook"
+msgstr "Facebook"
+
+#: options.php:211
+msgid "Email Address"
+msgstr "E-mail cím"
+
+#: options.php:218
+msgid "Skype"
+msgstr "Skype"
+
+#: options.php:198
+msgid "Enter link to redirect slider when clicked"
+msgstr "Add meg, hová ugorjunk, ha a Slider-re kattintanak."
+
+#: options.php:207
+msgid "Social"
+msgstr "Közösségi"
+
+#: options.php:186
+msgid "Enter title for your slider."
+msgstr "Adj nevet a Slider-nek. "
+
+#: options.php:192
+msgid "Enter your slider description."
+msgstr "A Slider leírása."
+
+#: options.php:180
+msgid "Image Upload #%1$s"
+msgstr "Képfeltöltés #%1$s"
+
+#: options.php:181
+msgid "Upload slider image."
+msgstr "Slider-kép feltöltése."
+
+#: options.php:171
+msgid "Check to activate slider."
+msgstr "Pipáld ki a slider aktiváláshoz."
+
+#: options.php:170
+msgid "Activate slider"
+msgstr "Slider aktiválása."
+
+#: options.php:164
+msgid "Slider"
+msgstr "Slider"
+
+#: options.php:150
+msgid "Select default layout for single posts. This layout will be reflected in all single posts unless unique layout is set for specific post."
+msgstr "Az egyes posztok alapértelmezett megjelenítése. Ez minden egyes behjegyzésre hatással van, kivéve ha egyedi layoutot adsz meg egyes posztoknál."
+
+#: options.php:149
+msgid "Default layout for single posts only"
+msgstr "Alapértelmezett layout az egyes posztokhoz"
+
+#: options.php:137
+msgid "Default layout for pages only"
+msgstr "Oldala alapértelmezett megjelenése."
+
+#: options.php:138
+msgid "Select default layout for pages. This layout will be reflected in all pages unless unique layout is set for specific page."
+msgstr "Válaszd ki az oldalak alapértlemezett layoutját. Ez minden egyes oldalra hatással van, kivéve ha az egyes oldalnak egyedi layoutot állítasz be."
+
+#: options.php:126
+msgid "Select default layout. This layout will be reflected in whole site archives, search etc. The layout for a single post and page can be controlled from below options."
+msgstr "Alapértelmezett layout kiválasztása. Ez minden oldalon pl. keresés, archívum stb. tükröződni fog. Az oldalak és postok megjelenését lejjebb állíthatod be."
+
+#: options.php:120
+msgid "Design"
+msgstr "Dizájn"
+
+#: options.php:125
+msgid "Default layout"
+msgstr "Alapértelmezett elrendezés"
+
+#: options.php:102
+msgid "Activate favicon"
+msgstr "Favicon aktiválása."
+
+#: options.php:103
+msgid "Check to activate favicon. Upload fav icon from below option"
+msgstr "Pipáld kia  favicon aktiválásához. Lejjebb fel is tudod tölteni."
+
+#: options.php:111
+msgid "Upload favicon"
+msgstr "Favicon feltöltése"
+
+#: options.php:112
+msgid "Upload favicon for your site."
+msgstr "Favicon feltöltése"
+
+#: options.php:97
+msgid "Header"
+msgstr "Fejrész"
+
+#: options.php:36
+msgid "Waffle"
+msgstr "Waffle"
+
+#: options.php:34
+msgid "Omelette"
+msgstr "Omelette"
+
+#: options.php:35
+msgid "Crepe"
+msgstr "Crepe"
+
+#: options.php:32
+msgid "French Toast"
+msgstr "French Toast"
+
+#: options.php:33
+msgid "Pancake"
+msgstr "Pancake"
+
+#: options.php:24
+msgid "Two"
+msgstr "kettő"
+
+#: options.php:25
+msgid "Three"
+msgstr "három"
+
+#: options.php:26
+msgid "Four"
+msgstr "négy"
+
+#: options.php:27
+msgid "Five"
+msgstr "öt"
+
+#: inc/widgets/widgets.php:49
+msgid "Shows widgets at footer sidebar three."
+msgstr "Tegyél widgeteket az Lábléc hasáb 3-ba."
+
+#: options.php:23
+msgid "One"
+msgstr "egy"
+
+#: inc/widgets/widgets.php:47
+msgid "Footer Sidebar Three"
+msgstr "Lábléc hasáb 3"
+
+#: inc/widgets/widgets.php:38
+msgid "Footer Sidebar Two"
+msgstr "Lábléc hasáb 2"
+
+#: inc/widgets/widgets.php:40
+msgid "Shows widgets at footer sidebar two."
+msgstr "Tegyél widgeteket az Lábléc hasáb 2-be."
+
+#: inc/widgets/widgets.php:29
+msgid "Footer Sidebar One"
+msgstr "Lábléc hasáb 1"
+
+#: inc/widgets/widgets.php:31
+msgid "Shows widgets at footer sidebar one."
+msgstr "Tegyél widgeteket az Lábléc hasáb 1-be."
+
+#: inc/widgets/widgets.php:20
+msgid "Left Sidebar"
+msgstr "Bal oldalsáv"
+
+#: inc/widgets/widgets.php:11
+msgid "Right Sidebar"
+msgstr "Jobb oldalsáv"
+
+#: inc/template-tags.php:213
+msgid "Newer posts"
+msgstr "Újabb bejegyzések"
+
+#: inc/template-tags.php:209
+msgid "Older posts"
+msgstr "Régebbi bejegyzések"
+
+#: inc/template-tags.php:203
+msgid "Page"
+msgstr "Oldal"
+
+#: inc/template-tags.php:185
+msgid "Your comment is awaiting moderation."
+msgstr "A hozzászólás rendszer-moderációra várakozik."
+
+#: inc/template-tags.php:180
+msgctxt "1: date, 2: time"
+msgid "%1$s at %2$s"
+msgstr "%1$s - %2$s"
+
+#: inc/template-tags.php:178
+msgid "%s"
+msgstr "%s"
+
+#: inc/template-tags.php:92
+msgid "Archives"
+msgstr "Archívumok"
+
+#: inc/template-tags.php:86
+msgid "Archives: %s"
+msgstr "Archívumok: %s"
+
+#. translators: 1: Taxonomy singular name, 2: Current taxonomy term
+#: inc/template-tags.php:90
+msgid "%1$s: %2$s"
+msgstr "%1$s: %2$s"
+
+#: inc/template-tags.php:83
+msgctxt "post format archive title"
+msgid "Chats"
+msgstr "Beszélgetés naplók"
+
+#: inc/template-tags.php:81
+msgctxt "post format archive title"
+msgid "Audio"
+msgstr "Hangok"
+
+#: inc/template-tags.php:79
+msgctxt "post format archive title"
+msgid "Statuses"
+msgstr "Állapot üzenetek"
+
+#: inc/template-tags.php:77
+msgctxt "post format archive title"
+msgid "Links"
+msgstr "Hivatkozások"
+
+#: inc/template-tags.php:75
+msgctxt "post format archive title"
+msgid "Quotes"
+msgstr "Idézetek"
+
+#: inc/template-tags.php:73
+msgctxt "post format archive title"
+msgid "Videos"
+msgstr "Videók"
+
+#: inc/template-tags.php:71
+msgctxt "post format archive title"
+msgid "Images"
+msgstr "Képek"
+
+#: inc/template-tags.php:69
+msgctxt "post format archive title"
+msgid "Galleries"
+msgstr "Galériák"
+
+#: inc/template-tags.php:67
+msgctxt "post format archive title"
+msgid "Asides"
+msgstr "Közbevetések"
+
+#: inc/template-tags.php:64
+msgctxt "daily archives date format"
+msgid "F j, Y"
+msgstr "Y-m-d"
+
+#: inc/template-tags.php:64
+msgid "Day: %s"
+msgstr "Nap: %s"
+
+#: inc/template-tags.php:62
+msgctxt "monthly archives date format"
+msgid "F Y"
+msgstr "Y F"
+
+#: inc/template-tags.php:62
+msgid "Month: %s"
+msgstr "Hónap: %s"
+
+#: inc/template-tags.php:60
+msgctxt "yearly archives date format"
+msgid "Y"
+msgstr "Y"
+
+#: inc/template-tags.php:60
+msgid "Year: %s"
+msgstr "Év: %s"
+
+#: inc/template-tags.php:58
+msgid "Author: %s"
+msgstr "Szerző: %s"
+
+#: inc/template-tags.php:56
+msgid "Tag: %s"
+msgstr "Címke: %s"
+
+#: inc/template-tags.php:54
+msgid "Category: %s"
+msgstr "Kategória: %s"
+
+#: inc/template-tags.php:38
+msgid "% Comments"
+msgstr "% hozzászólás"
+
+#: inc/template-tags.php:38
+msgid "1 Comment"
+msgstr "1 hozzászólás"
+
+#: inc/template-tags.php:38
+msgid "Leave a comment"
+msgstr "Vélemény?"
+
+#: inc/template-tags.php:29 inc/template-tags.php:43
+msgid ", "
+msgstr ", "
+
+#: inc/includes/class-options-sanitization.php:427
+msgid "Bold Italic"
+msgstr "Félövér dőlt"
+
+#: inc/includes/class-options-sanitization.php:426
+msgid "Bold"
+msgstr "Félkövér"
+
+#: inc/includes/class-options-sanitization.php:424
+msgid "Normal"
+msgstr "Normál"
+
+#: inc/includes/class-options-sanitization.php:425
+msgid "Italic"
+msgstr "Dőlt"
+
+#: inc/includes/class-options-sanitization.php:352
+msgid "Fixed in Place"
+msgstr "Rögzített"
+
+#: inc/includes/class-options-sanitization.php:351
+msgid "Scroll Normally"
+msgstr "Alapértelmezett görgetés"
+
+#: inc/includes/class-options-sanitization.php:339
+msgid "Bottom Right"
+msgstr "Jobbra lent"
+
+#: inc/includes/class-options-sanitization.php:338
+msgid "Bottom Center"
+msgstr "Alul középen"
+
+#: inc/includes/class-options-sanitization.php:336
+msgid "Middle Right"
+msgstr "Középen jobbra"
+
+#: inc/includes/class-options-sanitization.php:337
+msgid "Bottom Left"
+msgstr "Balra lent"
+
+#: inc/includes/class-options-sanitization.php:335
+msgid "Middle Center"
+msgstr "Középen"
+
+#: inc/includes/class-options-sanitization.php:334
+msgid "Middle Left"
+msgstr "Középen balra"
+
+#: inc/includes/class-options-sanitization.php:333
+msgid "Top Right"
+msgstr "Jobbra fent"
+
+#: inc/includes/class-options-sanitization.php:332
+msgid "Top Center"
+msgstr "Középen felül"
+
+#: inc/includes/class-options-sanitization.php:319
+msgid "Repeat All"
+msgstr "Mindegyik ismétlése"
+
+#: inc/includes/class-options-sanitization.php:331
+msgid "Top Left"
+msgstr "Balra fent"
+
+#: inc/includes/class-options-sanitization.php:318
+msgid "Repeat Vertically"
+msgstr "Vízszintes ismétlés"
+
+#: inc/includes/class-options-sanitization.php:317
+msgid "Repeat Horizontally"
+msgstr "Függőleges ismétlés"
+
+#: inc/includes/class-options-sanitization.php:316
+msgid "No Repeat"
+msgstr "Nincs ismétlés"
+
+#: inc/includes/class-options-media-uploader.php:94
+msgid "View File"
+msgstr "Fájl megtekintése"
+
+#: inc/includes/class-options-media-uploader.php:70
+msgid "Upgrade your version of WordPress for full media support."
+msgstr "A teljes médiatámogatáshoz frissítse a Wordpress verzióját."
+
+#: inc/includes/class-options-media-uploader.php:67
+#: inc/includes/class-options-media-uploader.php:119
+msgid "Remove"
+msgstr "Eltávolítás"
+
+#: inc/includes/class-options-media-uploader.php:65
+#: inc/includes/class-options-media-uploader.php:118
+msgid "Upload"
+msgstr "Feltöltés"
+
+#: inc/includes/class-options-media-uploader.php:62
+msgid "No file chosen"
+msgstr "Nincs fájl kijelölve."
+
+#: inc/includes/class-options-framework-admin.php:289
+msgid "Options saved."
+msgstr "Beállítások mentésre kerültek."
+
+#: inc/includes/class-options-framework-admin.php:235
+msgid "Default options restored."
+msgstr "Alapértelmezettek visszaállítva."
+
+#: inc/includes/class-options-framework-admin.php:204
+msgid "Click OK to reset. Any theme settings will be lost!"
+msgstr "Kattints az OK-ra a visszaállításhoz. Minden témabeállítás elvész!"
+
+#: inc/includes/class-options-framework-admin.php:204
+msgid "Restore Defaults"
+msgstr "Alapértelmezettek visszaállítása"
+
+#: inc/includes/class-options-framework-admin.php:203
+msgid "Save Options"
+msgstr "Beállítások mentése"
+
+#: inc/includes/class-options-framework-admin.php:91
+#: inc/includes/class-options-framework-admin.php:92
+msgid "Theme Options"
+msgstr "Sablon beállítások"
+
+#: inc/extras.php:52
+msgid "Page %s"
+msgstr "Oldal %s"
+
+#: header.php:68
+msgid "Menu"
+msgstr "Menü"
+
+#: header.php:54
+msgid "Find Us on LinkedIn"
+msgstr ""
+
+#: header.php:57
+msgid "Find Us on Tumblr"
+msgstr ""
+
+#: header.php:60
+msgid "Find Us on Flickr"
+msgstr ""
+
+#: header.php:48
+msgid "Follow Us on Instagram"
+msgstr ""
+
+#: header.php:51
+msgid "Pin Us on Pinterest"
+msgstr ""
+
+#: header.php:39
+msgid "Follow Us on Twitter"
+msgstr ""
+
+#: header.php:42
+msgid "Find Us on Google Plus"
+msgstr ""
+
+#: header.php:45
+msgid "View our YouTube Channel"
+msgstr ""
+
+#: header.php:36
+msgid "Find Us on Facebook"
+msgstr ""
+
+#: header.php:30
+msgid "Send Us an Email"
+msgstr ""
+
+#: header.php:33
+msgid "Contact Us on Skype"
+msgstr ""
+
+#: header.php:22
+msgid "Skip to content"
+msgstr "Megszakítás"
+
+#: functions.php:53
+msgid "Primary Menu"
+msgstr "Elsődleges menü"
+
+#: footer.php:19
+msgid "Theme: %1$s by %2$s."
+msgstr "Sablon: %1$s Szerző: %2$s."
+
+#: footer.php:17
+msgid "Proudly powered by %s"
+msgstr "Köszönjük %s!"
+
+#: footer.php:17
+msgid "http://wordpress.org/"
+msgstr "http://wphu.org"
+
+#: content.php:20
+msgid "Read more"
+msgstr "Olvass tovább"
+
+#: content-page.php:31 inc/template-tags.php:34 inc/template-tags.php:182
+msgid "Edit"
+msgstr "Szerkesztés"
+
+#: content-page.php:24 content-single.php:22 content.php:24
+msgid "Pages:"
+msgstr "Oldal:"
+
+#: content-none.php:28
+msgid "It seems we can&rsquo;t find what you&rsquo;re looking for. Perhaps searching can help."
+msgstr "Úgy tűnik, nem találtuk meg amit kerestünk. :) Talán, egy újabb keresés segíthetne..."
+
+#: content-none.php:23
+msgid "Sorry, but nothing matched your search terms. Please try again with some different keywords."
+msgstr "Elnézést, nem találunk a keresési feltételeknek megfelelő eredményt. Másik kulcsszóval, kifejezéssel újra kellene kezdeni egy keresést."
+
+#: content-none.php:19
+msgid "Ready to publish your first post? <a href=\"%1$s\">Get started here</a>."
+msgstr "Készen állunk az első bejegyzés közzétételére? <a href=\"%1$s\">Kezdőlépések</a>."
+
+#: content-none.php:13
+msgid "Nothing Found"
+msgstr "Nincs megfelelő találat"
+
+#: comments.php:93
+msgid "Cancel reply"
+msgstr "Kilépés a válaszból"
+
+#: comments.php:86
+msgid "Website"
+msgstr "Webhely"
+
+#: comments.php:85
+msgid "Email"
+msgstr "Email"
+
+#: comments.php:84
+msgid "Name"
+msgstr "Név"
+
+#: comments.php:72
+msgid "Comments are closed."
+msgstr "A hozzászólások jelenleg ezen a részen nincs engedélyezve."
+
+#: comments.php:39 comments.php:60
+msgid "Newer Comments"
+msgstr "Újabb hozzászólás"
+
+#: comments.php:38 comments.php:59
+msgid "Older Comments"
+msgstr "Korábbi hozzászólás"
+
+#: comments.php:35 comments.php:56
+msgid "Comment navigation"
+msgstr "Hozzászólás navigáció"
+
+#: comments.php:28
+msgctxt "comments title"
+msgid "One thought on &ldquo;%2$s&rdquo;"
+msgid_plural "%1$s thoughts on &ldquo;%2$s&rdquo;"
+msgstr[0] "&ldquo;%2$s&rdquo; bejegyzéshez egy hozzászólás"
+msgstr[1] "&ldquo;%2$s&rdquo; bejegyzéshez %1$s hozzászólás"
+
+#. translators: %1$s: smiley
+#: 404.php:44
+msgid "Try looking in the monthly archives. %1$s"
+msgstr "Próbáljunk betekinteni a hónap bejegyzéseibe: %1$s"
+
+#: 404.php:27
+msgid "Most Used Categories"
+msgstr "Leggyakoribb kategóriák"
+
+#: 404.php:19
+msgid "It looks like nothing was found at this location. Maybe try one of the links below or a search?"
+msgstr "A keresett oldal vagy bejegyzés nem található. Próbálkozzunk meg az alábbi hivatkozásokkal vagy esetleg egy kereséssel."
+
+#: 404.php:15
+msgid "Oops! That page can&rsquo;t be found."
+msgstr "Elnézést, az oldal nem található"
+
+#. Author URI of the plugin/theme
+msgid "http://nethemes.com/"
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "NEThemes"
+msgstr ""
+
+#. Theme URI of the plugin/theme
+msgid "http://nethemes.com/themes/neblue/"
+msgstr ""

@@ -1,0 +1,1554 @@
+<?php
+
+
+/* Query-Class inkludieren */
+include_once( 'queryelements.php' );
+include_once( 'imagecache.class.php' );
+include_once( 'getstoreurls.class.php' );
+include_once( 'createoutput.class.php' );
+	
+	
+/**
+* wpAppbox_GetAppInfoAPI
+*/
+
+class wpAppbox_GetAppInfoAPI {
+	
+	
+	/**
+	* Baut aus dem Store-Namen und der App-ID eine eindeutige Cache-ID auf
+	*
+	* @since   4.0.0
+	*
+	* @param   string  $storeID  ID des Stores (z.B. "googleplay")
+	* @param   string  $appID    ID der App
+	* @return  string  $cacheID  ID des Caches und INDEX für die Datenbank
+	*/
+	
+	function getCacheID( $storeID, $appID ) {
+		$cacheID = md5( $appID . '-' . $storeID );
+		return( $cacheID );
+	}
+	
+	
+	/**
+	* Baut den Funktionsnamen zusammen und ruft die Funktionen zum Laden und Zurückgeben der App-Informationen auf
+	*
+	* @since   2.0.0
+	* @change  4.0.15
+	*
+	* @param   string  	$storeID  ID des Stores (z.B. "googleplay")
+	* @param   string  	$appID    ID der App
+	* @param   boolean  $isCron   true wenn über Cronjob ausgeführt [optional]
+	* @return  array  	$appData  Array der App-Daten
+	*/
+	
+	function getTheAppData( $storeID, $appID, $isCron = false ) {
+		switch ( $storeID ) {
+			case 'androidpit':
+				$storeID = 'googleplay';
+				break;
+			case 'windowsphone':
+				$storeID = 'windowsstore';
+				break;
+			case 'appstore':
+				$appID = str_replace( array( '-iphone', '-ipad', '-universal', '-watch', '-imessage', '-appletv' ), '', $appID );
+				if ( substr( $appID, 0, 2 ) == 'id' )
+					$appID = substr( $appID, 2 );
+				break;
+		}
+		$cacheID = self::getCacheID( $storeID, $appID );
+		$transientName = 'wpAppbox_blockQuery_' . $cacheID;
+		if ( '' != get_transient( $transientName ) && !wpAppbox_forceNewCache( $cacheID ) && !$isCron ) {
+			$blockedUntil = date_i18n( 'Y-m-d H:i:s', get_option( '_transient_timeout_' . $transientName ) );
+			wpAppbox_errorOutput( 'function: getTheAppData() ---> App (ID ' . $appID . ') not found. Queries are still blocked until ' . $blockedUntil . '.' );
+			return( false );
+		}
+		$thegetfunction = "get$storeID";
+		$hasCachedData = $this->hasCachedData( $cacheID );
+		
+		if ( !$hasCachedData['exists'] ) { 
+			/**
+			* Cache existiert nicht
+			*/
+			wpAppbox_errorOutput( 'function: wpAppbox_hasCachedData() ---> App has no chached data' );
+			$appData = $this->$thegetfunction( $appID, $cacheID );
+			if ( $appData ) $appData = $this->cacheAppData( $appData );
+		} else { 
+			/**
+			* Cache existiert, aber...
+			*/
+			if ( $hasCachedData['expired'] ) {
+				/**
+				* Cache-Daten sind abgelaufen und müssen u.U. erneuert werden
+				*/
+				wpAppbox_errorOutput( 'function: wpAppbox_hasCachedData() ---> App has cached data but they are expired' );
+				$appData = $this->$thegetfunction( $appID, $cacheID );
+				if ( FALSE === $appData ) {
+					/**
+					* Die App konnte nicht (mehr) gefunden werden
+					*/
+					$appData = $this->markAsDeprecated( $cacheID );
+					$appData = true; // Einfach weil ja Daten vorhanden sind, Abfrage erfolgt später ;-)
+				} else {
+					/**
+					* Die App wurde im Store gefunden und besitzt Daten
+					*/
+					$appData = $this->cacheAppData( $appData );
+				}
+			} else { 
+				/**
+				* Cache-Daten sind nicht abgelaufen = aktuell
+				*/
+				$appData = true; // Einfach weil ja Daten vorhanden sind, Abfrage erfolgt später ;-)
+				wpAppbox_errorOutput( 'function: wpAppbox_hasCachedData() ---> App has valid cached data' );
+			}
+		}
+		/**
+		* App-Daten (oder Fehlermeldung) zurückgeben zur Weiterverarbeitung
+		*/
+		if ( $appData ) return( $this->returnCachedData( $cacheID ) );
+		else if ( !$appData && get_option( 'wpAppbox_blockMissing' ) ) { // Keine App gefunden
+			set_transient( $transientName, $cacheID, WPAPPBOX_BLOCKMISSINGTIME * MINUTE_IN_SECONDS );
+			$blockedUntil = date_i18n( 'Y-m-d H:i:s', get_option( '_transient_timeout_' . $transientName ) );
+			wpAppbox_errorOutput( 'function: getTheAppData() ---> App not found. Queries will be blocked until ' . $blockedUntil . '.' );
+		}
+		return( false );
+	}
+	
+	
+	/**
+	* Prüft ob die App-Daten bereits in der Cache-Tabelle liegen
+	*
+	* @since   2.0.0
+	* @change  4.0.12
+	*
+	* @param   string    $cacheID       	Cache-ID der App
+	* @return  array   	 $hasCachedData 	array('exists' => boolean, 'expired' => boolean)
+	* @output  function  errorOutput()  	Fehlermeldung
+	*/
+	
+	function hasCachedData( $cacheID ) {
+		global $wpdb;
+		$hasCachedData = array( 'exists' => false, 'expired' => false );
+		$cachedApp = $wpdb->get_row( "SELECT created FROM " . wpAppbox_databaseName() . " WHERE id = '" . $cacheID . "'" );
+		if ( $wpdb->last_error ) {
+			wpAppbox_errorOutput( 'function: wpAppbox_hasCachedData() ---> ' . $wpdb->last_error );
+		}
+		if ( $cachedApp != null ) {
+		
+			$hasCachedData['exists'] = true;
+			
+			switch ( get_option('wpAppbox_cacheMode' ) ) {
+				case 'loggedin': // Neue App-Daten nur abfragen, wenn Nutzerlevel >= 2 (Autor)
+					if ( !wpAppbox_isUserAuthor() ) {
+						wpAppbox_errorOutput( 'function: wpAppbox_hasCachedData() ---> Userlevel is too low (needed: user_level >= 2)' );
+						$hasCachedData['expired'] = false;
+						return( $hasCachedData );
+					}
+					break;
+				case 'manually': // Neue App-Daten nur über den Reload-Button abfragen (Voraussetzung: Nutzer hat User-Level >= 2,Autor)
+					if ( !wpAppbox_isUserAuthor() || !wpAppbox_forceNewCache( $cacheID ) ) {
+						wpAppbox_errorOutput( 'function: wpAppbox_hasCachedData() ---> Userlevel is too low for manual renewal (needed: user_level >= 2)' );
+						$hasCachedData['expired'] = false;
+						return( $hasCachedData );
+					}
+					break;
+				case 'cronjob': // Neue App-Daten nur via Cronjob abfragen
+					if ( defined( 'DOING_CRON' ) ) {
+						$hasCachedData['expired'] = true;
+						return( $hasCachedData );
+					} else if ( !wpAppbox_forceNewCache( $cacheID ) ) {
+						$hasCachedData['expired'] = false;
+						return( $hasCachedData );
+					}
+					break;
+			}
+			$timeCreated = $cachedApp->created;
+			$timeExpires = $timeCreated + ( WPAPPBOX_CACHINGTIME * 60 );
+			$timeNow = time(); 
+			if ( wpAppbox_forceNewCache( $cacheID ) ) {
+				$timeExpires = 0;
+			}
+			if ( $timeNow >= $timeExpires ) {
+				$hasCachedData['expired'] = true;
+			}
+		} else {
+			$hasCachedData['exists'] = false;
+		}
+		return( $hasCachedData );
+	}
+	
+	
+	/**
+	* Markiert eine App in der Datenbank als "deprecated"
+	*
+	* @since   4.0.0
+	* @change  4.0.1
+	*
+	* @param   string     $cacheID       Cache-ID der App
+	*/
+	
+	function markAsDeprecated( $cacheID ) {
+		global $wpdb;
+		if ( $cacheID != '' ):
+			$updated = $wpdb->update( wpAppbox_databaseName(), array( 'deprecated' => '1', 'created' => time() ), array( 'id' => $cacheID ) );
+			if ( false === $updated ):
+				// Es ist ein Fehler aufgetreten
+				wpAppbox_errorOutput( 'function: wpAppbox_markAsDeprecated() ---> ' . $wpdb->last_error );
+			    wpAppbox_errorOutput( 'function: wpAppbox_markAsDeprecated() ---> Something went wrong. :-(' );
+			else:
+				wpAppbox_errorOutput( 'function: wpAppbox_markAsDeprecated() ---> App was marked as deprecated.' );
+			    // No error. You can check updated to see how many rows were changed.
+			    if ( wpAppbox_imageCache::quickcheckImageCache() ):
+			    	$imgCache = new wpAppbox_imageCache;
+			    	if ( !$imgCache->markAsDeprecated( $cacheID ) ):
+			    		wpAppbox_errorOutput( 'function: wpAppbox_markAsDeprecated() ---> Folder could not marked as deprecated.' );
+			    	endif;
+			    endif;
+			endif;
+		endif;
+	}
+	
+	
+	/**
+	* Speichert die App-Daten im Cache
+	*
+	* @since   2.0.0
+	* @change  4.0.41
+	*
+	* @param   array     $appData       Array der App-Daten
+	* @return  boolean   true/false     TRUE when cached
+	* @output  function  errorOutput()  Fehlermeldung
+	*/
+	
+	function cacheAppData( $appData ) {
+		global $wpdb, $appIsDeprecated;
+		$appData['created'] = time();
+		$appData['deprecated'] = '0';
+		$appData['appbox_version'] = WPAPPBOX_PLUGIN_VERSION;
+		if ( isset( $appData['app_extend'] ) ) 
+			$appData['app_extend'] = serialize( $appData['app_extend'] );
+		if ( isset( $appData['app_screenshots'] ) ) 
+			$appData['app_screenshots'] = serialize( $appData['app_screenshots'] );
+		else $appData['app_screenshots'] = '';
+		if ( '' != trim( $appData['app_title'] ) ) {
+			/**
+			* BEGIN App-Daten für die Datenbank kontrollieren und korrigieren
+			*/
+			$fixedAddon = '<sup>[*]</sup>';
+			if ( 255 < mb_strlen( $appData['app_url'] ) ) 
+				$appData['app_url'] = substr( $appData['app_url'], 0, 255-3 ) . $fixedAddon;
+			if ( 350 < mb_strlen( $appData['app_icon'] ) )
+				$appData['app_icon'] = substr( $appData['app_icon'], 0, 350-3 ) . $fixedAddon;
+			if ( 255 < mb_strlen( $appData['app_title'] ) )
+				$appData['app_title'] = substr( $appData['app_title'], 0, 255-3 ) . $fixedAddon;
+			if ( 100 < mb_strlen( $appData['app_author'] ) )
+				$appData['app_author'] = substr( $appData['app_author'], 0, 100-3 ) . $fixedAddon;
+			if ( isset( $appData['app_author_url'] ) && 255 < strlen( $appData['app_author_url'] ) )
+				$appData['app_author_url'] = substr( $appData['app_author_url'], 0, 255-3 ) . $fixedAddon;
+			if ( 12 < mb_strlen( $appData['app_price'] ) )
+				$appData['app_price'] = substr( $appData['app_price'], 0, 12-3 ) . $fixedAddon;
+			if ( '' == $appData['app_price'] ) 
+				$appData['app_price'] = __( 'unknown', 'wp-appbox' );
+			if ( 1 < mb_strlen( $appData['app_has_iap'] ) )
+				$appData['app_has_iap'] = substr( $appData['app_has_iap'], 0, 1 );
+			if ( '' == $appData['app_rating'] )
+				$appData['app_rating'] = '-1';
+			if ( 3 < strlen( $appData['app_rating'] ) )
+				$appData['app_rating'] = substr( $appData['app_rating'], 0, 3 );
+			if ( is_numeric( $appData['app_rating'] ) ) 
+				$appData['app_rating'] = number_format( $appData['app_rating'], 1 );
+			/**
+			* END App-Daten für die Datenbank kontrollieren und korrigieren
+			*/
+			$replaced = $wpdb->replace( wpAppbox_databaseName(), $appData );
+			if ( $wpdb->last_error ):
+				wpAppbox_errorOutput( 'function: wpAppbox_cacheAppData() ---> ' . $wpdb->last_error );
+			else:
+				if ( wpAppbox_imageCache::quickcheckImageCache() ) {
+					$imgCache = new wpAppbox_imageCache;
+					$wpAppbox_CreateOutput_Helper = new wpAppbox_CreateOutput;
+					$tempQRcode = $wpAppbox_CreateOutput_Helper->returnQRCode( $appData['app_url'], $appData['app_id'], $appData['id'], true );
+					$result = $imgCache->cleanUp( $appData['id'], $appData['app_icon'], $appData['app_screenshots'], $tempQRcode );
+					$allImages = array();
+					if ( $imgCache->checkImageCacheType( 'appicon' ) )
+						$allImages = $allImages + $imgCache->getURLarray( 'ai', $appData['app_icon'] );
+					if ( $imgCache->checkImageCacheType( 'screenshots' ) )
+						$allImages = $allImages + $imgCache->getURLarray( 'ss', $appData['app_screenshots'] );
+					if ( $imgCache->checkImageCacheType( 'qrcode' ) )
+						$allImages = $allImages + $imgCache->getURLarray( 'qr', $tempQRcode );
+					$result = $imgCache->cacheImages( $allImages, $appData['id'] );
+				}
+				$flushCache = wpAppbox_clearCachePlugin();
+				return( true );
+			endif;
+		}
+		wpAppbox_errorOutput( 'function: wpAppbox_cacheAppData() ---> Something went wrong. :-( No app-title for ' . $appData['app_id'] );
+	}
+	
+	
+	/**
+	* Gibt die bereits gecachten App-Daten zurück
+	*
+	* @since   2.0.0
+	* @change  4.0.9
+	*
+	* @param   string  $cacheID         Cache-ID der App
+	* @return  array   $appData         Array der App-Daten
+	* @output  function  errorOutput()  Fehlermeldung
+	*/
+	
+	function returnCachedData( $cacheID ) {
+		global $wpdb;
+		$cachedApp = $wpdb->get_row( "SELECT * FROM " . wpAppbox_databaseName() . " WHERE id = '" . $cacheID . "' ");
+		if ( $wpdb->last_error )
+			wpAppbox_errorOutput( 'function: wpAppbox_returnCachedData() ---> ' . $wpdb->last_error );
+		if ( $cachedApp != null ) {
+			$appData = array();
+			$appData['id'] = $cachedApp->id;
+			$appData['app_id'] = $cachedApp->app_id;
+			$appData['app_url'] = $cachedApp->app_url;
+			$appData['app_icon'] = $cachedApp->app_icon;
+			$appData['app_title'] = $cachedApp->app_title;
+			$appData['app_author'] = $cachedApp->app_author;
+			$appData['app_author_url'] = $cachedApp->app_author_url;
+			$appData['app_price'] = $cachedApp->app_price;
+			$appData['app_has_iap'] = $cachedApp->app_has_iap;
+			$appData['app_rating'] = $cachedApp->app_rating;
+			$appData['store_name'] = $cachedApp->store_name;
+			$appData['store_name_css'] = $cachedApp->store_name_css;
+			$appData['appbox_version'] = $cachedApp->appbox_version;
+			$appData['fallback'] = $cachedApp->fallback;
+			$appData['created'] = $cachedApp->created;
+			$appData['deprecated'] = $cachedApp->deprecated;
+			$appData['app_extend'] = unserialize( $cachedApp->app_extend );
+			$appData['app_screenshots'] = unserialize( $cachedApp->app_screenshots );
+			return( $appData );
+		}
+	}
+
+	
+	/**
+	* Gibt die umgewandelte URL des Stores zurück
+	*
+	* @since   3.0.0
+	* @change  3.2.0
+	*
+	* @param   string  $storeID   ID des Stores (z.B. "googleplay)
+	* @param   string  $appID     ID der App
+	* @return  string  $storeURL  URL der App
+	*/
+	
+	function getStoreURL( $storeID, $appID ) {
+		global $wpAppbox_storeURL;
+		if ( '1' == get_option("wpAppbox_storeURL_$storeID") || '' == get_option("wpAppbox_storeURL_$storeID") ) {
+			$storeURL = $wpAppbox_storeURL[$storeID][1];
+		} elseif ( '0' == get_option("wpAppbox_storeURL_$storeID") && '' != get_option("wpAppbox_storeURL_URL_$storeID") ) {
+			$storeURL = get_option("wpAppbox_storeURL_URL_$storeID");
+		} elseif ( '0' == get_option("wpAppbox_storeURL_$storeID") && '' == get_option("wpAppbox_storeURL_URL_$storeID") ) {
+			$storeURL = $wpAppbox_storeURL[$storeID][1];
+		} else {
+			$storeURL = $wpAppbox_storeURL[$storeID][get_option("wpAppbox_storeURL_$storeID")];
+		}
+		$storeURL = str_replace( '{APPID}', $appID, $storeURL );
+		$storeURL = str_replace( '{ID}', $appID, $storeURL );
+		return( $storeURL );
+	}
+	
+	
+	/**
+	* Gibt einen zufälligen User-Agent zurück (Standart: User-Agent des Nutzers)
+	*
+	* @since   4.0.1
+	* @change  4.0.55
+	*
+	* @return  string   $userAgent  	User-Agent-String
+	*/
+	
+	function getUserAgent() {
+		$array_userAgent = array( 
+							'Mozilla/1.22 (compatible; MSIE 10.0; Windows 3.1)',
+							'Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko',
+							'Opera/9.80 (Windows NT 6.0) Presto/2.12.388 Version/12.14',
+							'Mozilla/5.0 (Windows; U; Windows NT 5.1; rv:1.7.3) Gecko/20041001 Firefox/0.10.1',
+							'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.75.14 (KHTML, like Gecko) Version/7.0.3 Safari/7046A194A'
+						   );
+		$userAgent = $array_userAgent[mt_rand( 0, count( $array_userAgent ) - 1) ];
+		return( $userAgent );
+	}
+	
+	
+	/**
+	* Gibt eine zufällige IP Adresse zurück (Standart: IP des Nutzers)
+	*
+	* @since   4.0.0
+	*
+	* @return  string   $userAgent  	User-Agent-String
+	*/
+	
+	function getRandomIP() {
+		if ( !empty($_SERVER['HTTP_CLIENT_IP'] ) ) return( $_SERVER['HTTP_CLIENT_IP'] );
+		if ( !empty( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ) return( $_SERVER['HTTP_X_FORWARDED_FOR'] );
+		if ( !empty( $_SERVER['REMOTE_ADDR'] ) ) return( $_SERVER['REMOTE_ADDR'] );
+		$randomIP = "" . mt_rand( 0, 255 ) . "." . mt_rand( 0, 255 ) . "." . mt_rand( 0, 255 ) . "." . mt_rand( 0, 255 );
+		return( $randomIP );
+	}
+	
+	
+	/**
+	* Gibt den Quellcode einer URL zurück
+	*
+	* @since   1.0.0
+	* @change  4.0.16
+	*
+	* @param   string  $appURL              URL der App
+	* @param   string  $javascript_loop     Wie viele JS-Loops [optional]
+	* @param   string  $timeout             Timeout der Anfrage [optional]
+	* @return  array   $content, $response  Quelltext und HTTP-Codes
+	*/
+	
+	function getContent( $appURL, $javascript_loop = 0, $timeout = 5 ) {
+		$appURL = urldecode( $appURL );
+		if ( '' != get_option('wpAppbox_curlTimeout') )
+			$timeout = get_option('wpAppbox_curlTimeout');
+		if ( defined( 'DOING_CRON' ) ) $timeout = 15; // Bei Cronjob längeren Timeout setzen
+		$appURL = str_replace( "&amp;", "&", trim( $appURL ) );
+		$cookie = tempnam( "/tmp", "CURLCOOKIE" );
+		$ch = curl_init();
+		curl_setopt( $ch, CURLOPT_HTTPHEADER, array( "REMOTE_ADDR: " . $this->getRandomIP(), "HTTP_X_FORWARDED_FOR: " . $this->getRandomIP() ) );
+		curl_setopt( $ch, CURLOPT_USERAGENT, $this->getUserAgent() );
+		curl_setopt( $ch, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4 );
+		curl_setopt( $ch, CURLOPT_URL, utf8_decode( $appURL ) );
+		curl_setopt( $ch, CURLOPT_COOKIEJAR, $cookie );
+		curl_setopt( $ch, CURLOPT_ENCODING, "" );
+		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+		curl_setopt( $ch, CURLOPT_ENCODING, 'gzip' );
+		curl_setopt( $ch, CURLOPT_AUTOREFERER, false );
+		curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false ); 
+		curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true ); 
+		if ( ini_get('open_basedir') == '' && !ini_get('safe_mode') )
+			curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
+		curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, $timeout );
+		curl_setopt( $ch, CURLOPT_TIMEOUT, $timeout );
+		curl_setopt( $ch, CURLOPT_MAXREDIRS, 10 );
+		$i = 0;
+		while ( $i++ < 3 ):
+			$content = curl_exec( $ch );
+			$response = curl_getinfo( $ch );
+			if ( '0' == curl_errno( $ch ) ) 
+				break;
+		endwhile;
+		curl_close( $ch );
+		unlink( $cookie );
+		if ( 403 == $response['http_code'] ):
+			ini_set( 'user_agent', 'Mozilla/4.0 (compatible; MSIE 6.0)' ); 
+			$content_fgc = @file_get_contents( $appURL );
+			foreach ( $http_response_header as $response_code ):
+				if ( strpos( $response_code, '200 OK' ) !== false )
+					return( array( $content_fgc, array( 'http_code' => '200' ) ) );
+			endforeach;
+		endif;
+		if ( 301 == $response['http_code'] || 302 == $response['http_code'] ):
+			ini_set( "user_agent", "Mozilla/5.0 (Windows; U; Windows NT 5.1; rv:1.7.3) Gecko/20041001 Firefox/0.10.1" );
+			if ( $headers = get_headers( $response['url'] ) ) {
+				foreach ( $headers as $value ):
+					if ( "location:" == substr( strtolower( $value ) , 0, 9 ) ) 
+						return( $this->getContent( trim( substr( $value, 9, strlen( $value ) ) ) ) );
+				endforeach;
+			}
+		endif;
+		if ( ( preg_match( "/>[[:space:]]+window\.location\.replace\('(.*)'\)/i", $content, $value ) || preg_match( "/>[[:space:]]+window\.location\=\"(.*)\"/i", $content, $value ) ) && $javascript_loop < 5 )
+			return( $this->getContent( $value[1], $javascript_loop+1 ) );
+		else
+			return( array( $content, $response ) );
+	}
+	
+	
+	/**
+	* Informationen aus dem Play Store auslesen
+	*
+	* @since   1.0.0
+	* @change  4.0.50
+	*
+	* @param   string  $appID    ID der App
+	* @param   string  $cacheID  Cache-ID der App
+	* @param   string  $storeID  ID des Stores (wird fest vergeben)
+	* @return  array   $appData  Array der App-Daten
+	*/
+	
+	function getGooglePlay( $appID, $cacheID, $storeID = 'googleplay' ) {
+		if ( '' != get_transient( 'wpAppbox_blockGooglePlay' ) ) {
+			$blockedUntil = date_i18n( 'Y-m-d H:i:s', get_option( '_transient_timeout_wpAppbox_blockGooglePlay' ) );
+			wpAppbox_errorOutput( 'function: getGooglePlay() ---> Temporary recognition as a bot. Play Store queries are blocked until ' . $blockedUntil . '.' );
+			return( false );
+		}
+		$pageURL = $this->getStoreURL( $storeID, $appID );
+		$thisContent = $this->getContent( $pageURL );
+		//wpAppbox_errorOutput( $thisContent );
+		$appData = array();
+		if ( isset( $thisContent[0] ) && '200' == $thisContent[1]['http_code'] ) {
+			wpAppbox_errorOutput( 'function: getGooglePlay() ---> Get app information' );
+			phpQuery::newDocumentHTML( $thisContent[0] );
+			$error_found = pq( "#error-section" )->text();
+			if ( '' != $error_found ) {
+				return( false ); //and quit
+			}
+			//App-Daten aus der HTML-Seite auslesen
+			$appURL = pq( 'link[hreflang="x-default"]' )->attr( 'href' );
+			if ( $appURL == '' ) $appURL = pq( 'meta[property="og:url"]' )->attr( 'content' );
+			$appURL = str_replace( '&rdid=sp0n.citizen&feature=md&offerId', '', $appURL );
+			$appIcon = pq( 'img[itemprop="image"][alt*="Cover"]' )->attr( 'src' );
+			if ( $appIcon == '' ) 
+				$appIcon = pq( 'img[itemprop="image"]:first' )->attr( 'src' );
+			$appIcon = preg_replace( '/(\/\/.*\.com\/.*)(\=w[0-9]{1,4}(?:-rw)?)/i', '$1=w128', $appIcon );
+			$appTitle = pq( 'div[itemprop="name"]>div' )->html();
+			if ( '' == trim( $appTitle ) ) {
+				$appTitle = strip_tags( pq( 'h1[itemprop="name"]' )->html() );
+			}
+			$appAuthor = pq( 'div>span>a[href*="store/apps/dev"]:first' )->html();
+			$appAuthorURL = pq( 'div>span>a[href*="store/apps/dev"]:first' )->attr( 'href' );
+			if ( FALSE === strpos( $appAuthorURL, 'play.google.com' ) ) 
+				$appAuthorURL = 'https://play.google.com' . $appAuthorURL;
+			$appPrice = pq( 'meta[itemprop="price"]' )->attr( 'content' );
+			if ( '' == $appPrice || '' != pq( 'div.preregistration-text' )->html() )
+				$appExtend['ispreregister'] = true;
+			if ( strpos( $appPrice, "," ) == false && strpos( $appPrice, "." ) == false )
+				$appPrice = '0';
+			if ( preg_match( '/<div class="\D{0,20}">\D{0,10}?in[-| ]app\D{0,10}?<\/div>/i', $thisContent[0] ) )
+				$appHasIAP = true;
+			else 
+				$appHasIAP = false;
+			$appRatingHTML = pq( 'div[class="pf5lIe"]:first>div' )->html();
+			$appRating = 5 - substr_count( $appRatingHTML, 'L0jl5e' );
+			if ( 0 < substr_count( $appRatingHTML, 'D3FNOd' ) ) $appRating = $appRating + 0.5;
+			$appScreenshots = array();
+			foreach ( pq( '*[data-screenshot-item-index*=""]>img' ) as $appShots ) {
+				$appScreenshot = pq( $appShots )->attr( 'src' );
+				$appScreenshot = strtok( $appScreenshot, '=' ) . '=h310';
+				if ( !in_array( $appScreenshot, $appScreenshots ) )
+					$appScreenshots[] = $appScreenshot;
+			}
+			/* ============================================================================== */
+			/* For old Google Play Design - Thank you Google for this sh*tty stuff *facepalm* */
+			/* ============================================================================== */
+			if ( $appURL == '' ) 
+				$appURL = pq( 'meta[itemprop="url"]' )->attr( 'content' );
+			if ( $appIcon == '' ) 
+				$appIcon = pq( 'img.cover-image' )->attr( 'content' );
+			if ( $appRating == '' ) 	
+				$appRating = pq( 'meta[itemprop="ratingValue"]' )->attr( 'content' );
+			if ( $appAuthor == '' ) 
+				$appAuthor = pq( 'div[itemprop="author"]>a>span[itemprop="name"]' )->html();
+			if ( $appAuthorURL == '' ):
+				$appAuthorURL = pq( 'div[itemprop="author"]>meta[itemprop="url"]' )->attr( 'content' );
+				if ( FALSE === strpos( $appAuthorURL, 'play.google.com' ) ) 
+					$appAuthorURL = 'https://play.google.com' . $appAuthorURL;
+			endif;
+			if ( !isset( $appHasIAP ) ):
+				if ( '' != ( trim( pq( 'div.inapp-msg' )->html() ) ) )
+					$appHasIAP = true;
+				else 
+					$appHasIAP = false;
+			endif;
+			$oldPrice = trim( pq( 'div.details-info span.full-price' )->html() );
+			if ( '' != $oldPrice ) {
+				$appExtend = array( 'oldPrice' => $oldPrice );
+			}
+			if ( empty( $appScreenshots ) ):
+				$appScreenshots = array();
+				foreach ( pq( 'img[itemprop="screenshot"]' ) as $appShots ) {
+					$appScreenshot = pq( $appShots )->attr( 'src' );
+					$appScreenshot = preg_replace( '/(\/\/.*\.com\/.*)(\=h[0-9]{1,4}(?:-rw)?)/i', '$1=h310', $appScreenshot );
+					$appScreenshots[] = $appScreenshot;
+				}
+			endif;
+			/* ============================================================================== */
+			/* Really Google: Thank you for nothing...                                        */
+			/* ============================================================================== */
+			//App-Daten in Array schreiben
+			$appData['id'] = $cacheID;
+			$appData['app_id'] = $appID;
+			$appData['app_url'] = $appURL;
+			$appData['app_icon'] = $appIcon;
+			$appData['app_title'] = trim( $appTitle );
+			$appData['app_author'] = trim( $appAuthor );
+			$appData['app_author_url'] = $appAuthorURL;
+			$appData['app_price'] = $appPrice;
+			$appData['app_has_iap'] = $appHasIAP;
+			$appData['app_rating'] = $appRating;
+			if ( isset( $appExtend ) ) {
+				$appData['app_extend'] = $appExtend;
+			}
+			$appData['store_name'] = 'Google Play';
+			$appData['store_name_css'] = $storeID;
+			$appData['app_screenshots'] = $appScreenshots;
+			return( $appData );
+		}
+		if ( $thisContent[1]['http_code'] == '503' || $thisContent[1]['http_code'] == '302' ) {
+			set_transient( 'wpAppbox_blockGooglePlay', ( time() + 3 * HOUR_IN_SECONDS ), 3 * HOUR_IN_SECONDS );
+				$blockedUntil = date_i18n( 'Y-m-d H:i:s', get_option( '_transient_timeout_wpAppbox_blockGooglePlay' ) );
+			wpAppbox_errorOutput( 'function: getGooglePlay() ---> Temporary recognition as a bot. Play Store queries will be blocked until ' . $blockedUntil . '.' );
+			return( false );
+		}
+		wpAppbox_errorOutput( 'function: getGooglePlay() ---> Get no app information' );
+		return( false );
+	}
+	
+	
+	/**
+	* Informationen aus dem Amazon App Shop auslesen (via Amazon API)
+	*
+	* @since   3.4.0
+	* @change  4.0.0
+	*
+	* @param   string  $appID    ID der App
+	* @param   string  $storeID  ID des Stores (wird fest vergeben)
+	* @return  array   $appData  Array der App-Daten
+	*/
+	
+	function getAmazonApps( $appID, $cacheID, $storeID = 'amazonapps' ) {
+		global $wpdb;
+		if ( !wpAppbox_checkAmazonAPI() ) {
+			return( $this->getAmazonAppsFallback( $appID, $cacheID ) );
+		}
+	    $amaRegion = get_option( 'wpAppbox_amaAPIregion' );
+	    $amaSecretKey = base64_decode( get_option( 'wpAppbox_amaAPIsecretKey' ) );
+	    $params["AWSAccessKeyId"]   = get_option( 'wpAppbox_amaAPIpublicKey' );
+	    $params["AssociateTag"]     = get_option( 'wpAppbox_affiliateAmazonID' );
+	    $params["Service"]          = 'AWSECommerceService';
+	    $params["ItemId"] 			= $appID;
+	    $params["Operation"]     	= 'ItemLookup';
+	    $params["ResponseGroup"]    = 'Medium,Reviews';
+	    $params["Timestamp"]        = gmdate( "Y-m-d\TH:i:s\Z" );
+	    $params["Version"]          = "2013-08-01";
+	    ksort( $params );
+	    $canonicalizedQuery = array();
+	    foreach ( $params as $param => $value ) {
+	        $param = str_replace( "%7E", "~", rawurlencode( $param ) );
+	        $value = str_replace( "%7E", "~", rawurlencode( $value ) );
+	        $canonicalizedQuery[] = $param . "=" . $value;
+	    }
+	    $canonicalizedQuery = implode( "&", $canonicalizedQuery );
+	    $stringToSign = "GET\necs.amazonaws.$amaRegion\n/onca/xml\n" . $canonicalizedQuery;
+	    $amaSignature = base64_encode( hash_hmac( "sha256", $stringToSign, $amaSecretKey, True ) );
+	    $amaSignature = str_replace( "%7E", "~", rawurlencode( $amaSignature ) );
+	    $amaRequest = "http://ecs.amazonaws.$amaRegion/onca/xml?" . $canonicalizedQuery . "&Signature=" . $amaSignature;
+		$ch = curl_init();
+		curl_setopt( $ch, CURLOPT_URL, $amaRequest );
+		curl_setopt( $ch, CURLOPT_HEADER, false );
+		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+		curl_setopt( $ch, CURLOPT_TIMEOUT, 3 );
+		$amaResult = curl_exec( $ch );
+		curl_close( $ch );
+		if ( $amaResult != str_replace( 'InvalidClientTokenId', '', $amaResult ) ) {
+			wpAppbox_errorOutput( 'function: getAmazonApps() ---> InvalidClientTokenId for Amazon API' );
+			wpAppbox_errorOutput( 'function: getAmazonApps() ---> Use getAmazonAppsFallback()' );
+			return( $this->getAmazonAppsFallback( $appID, $cacheID ) );
+		} else if ( $amaResult != str_replace( 'SignatureDoesNotMatch', '', $amaResult ) ) {
+			wpAppbox_errorOutput( 'function: getAmazonApps() ---> SignatureDoesNotMatch for Amazon API' );
+			wpAppbox_errorOutput( 'function: getAmazonApps() ---> Use getAmazonAppsFallback()' );
+			return( $this->getAmazonAppsFallback( $appID, $cacheID ) );
+		}
+		wpAppbox_errorOutput( 'function: getAmazonApps() ---> Get app information' );
+		$amaParsed = simplexml_load_string( $amaResult );
+		$amaParsed = $amaParsed->Items->Item;
+		$amaParsed = json_decode( json_encode( $amaParsed ), true );
+		if ( 'MOBILE_APPLICATION' == $amaParsed['ItemAttributes']['ProductTypeName'] || 'SKILL_APPLICATION' == $amaParsed['ItemAttributes']['ProductTypeName'] ) {
+			$appTitle = $amaParsed['ItemAttributes']['Title'];
+			if ( isset( $amaParsed['ItemAttributes']['OfferSummary'] ) ):
+				$appPrice = $amaParsed['ItemAttributes']['OfferSummary']['Amount'];
+				if ( '0' != $appPrice ):
+					$appPrice = $amaParsed['ItemAttributes']['OfferSummary']['FormattedPrice'];
+				endif;
+				if ( strpos( $appPrice, 'EUR' ) !== false ):
+					$appPrice = str_replace( 'EUR ', '', $appPrice ) . '€';
+				endif;
+			else:
+				$appPrice = '0';
+			endif;
+			$appURL = $amaParsed['DetailPageURL'];
+			$appAuthor = $amaParsed['ItemAttributes']['Publisher'];
+			$appIcon = $amaParsed['MediumImage']['URL'];
+			foreach ( $amaParsed['ImageSets']['ImageSet'] as $screenshotSet ):
+				if ( 'variant' == $screenshotSet['@attributes']['Category'] ):
+					$appScreenshot = $screenshotSet['LargeImage']['URL'];
+					if ( '' != Trim( $appScreenshot ) ) $appScreenshots[] = $appScreenshot;
+				endif;
+			endforeach;
+			if ( true == $amaParsed['CustomerReviews']['HasReviews'] ) {
+				$appRatingTemplate = $this->getContent( $amaParsed['CustomerReviews']['IFrameURL'] );
+				phpQuery::newDocumentHTML( $appRatingTemplate[0] );
+				$appRating = pq( 'span.asinReviewsSummary img' )->attr( 'src' );
+				preg_match( '/^https:\/\/images-eu.ssl-images-amazon.com\/(?:.*)stars-(.*)\._(?:.*)_\.gif$/i', $appRating, $appRating );
+				$appRating = str_replace( '-', '.', $appRating[1] );
+			} else {
+				$appRating = '-1';
+			}
+			$appPrice = '0';
+			$appExtend = array();
+			switch ( $amaParsed['ItemAttributes']['ProductTypeName'] ) {
+				case 'SKILL_APPLICATION':
+					$appExtend['alexaskill'] = true;
+					break;
+				default:
+					$appExtend['mobileapp'] = true;
+					break;
+			}
+			//App-Daten in Array schreiben
+			$appData['id'] = $cacheID;
+			$appData['app_id'] = $appID;
+			$appData['app_url'] = $appURL;
+			$appData['app_icon'] = $appIcon;
+			$appData['app_title'] = trim( $appTitle );
+			$appData['app_author'] = trim( $appAuthor );
+			$appData['app_author_url'] = ( isset( $appAuthorURL ) ? $appAuthorURL : '' );
+			$appData['app_price'] = $appPrice;
+			$appData['app_rating'] = $appRating;
+			$appData['app_extend'] = $appExtend;
+			$appData['store_name'] = 'Amazon Apps';
+			$appData['store_name_css'] = $storeID;
+			$appData['app_screenshots'] = $appScreenshots;
+			return( $appData );
+		}
+		wpAppbox_errorOutput( 'function: getAmazonApps() ---> Get no app information' );
+		return( false );
+	}
+	
+	
+	/**
+	* Informationen aus dem Amazon App Shop auslesen (via Scraping, Fallback)
+	*
+	* @since   3.4.0
+	* @change  4.0.0
+	*
+	* @param   string  $appID    ID der App
+	* @param   string  $storeID  ID des Stores (wird fest vergeben)
+	* @return  array   $appData  Array der App-Daten
+	*/
+	
+	function getAmazonAppsFallback($appID, $cacheID, $storeID = 'amazonapps') {
+		global $wpdb;
+		$pageURL = $this->getStoreURL( $storeID, $appID );
+		$thisContent = $this->getContent( $pageURL );
+		//wpAppbox_errorOutput( $thisContent );
+		$appData = array();
+		if ( isset( $thisContent[0] ) && '200' == $thisContent[1]['http_code'] ) {
+			wpAppbox_errorOutput( 'function: getAmazonAppsFallback() ---> Get app information' );
+			phpQuery::newDocumentHTML( $thisContent[0] );
+			$error_found = pq( "title" )->html();
+			if ( strpos( $error_found, "404" ) !== false ) {
+				return( false );
+			}
+			$appTitle = strip_tags( pq( 'div.buying>h1>span#btAsinTitle' )->html() );
+			$appRating = substr( Trim( pq( 'div#avgRating span' )->html() ), 0, 3);
+			$appPrice = pq( 'input[name*=priceValue]' )->attr( 'value' );
+			if ( '0' == $appPrice ) {
+				$appPrice = '0';
+			} else {
+				$appPrice = pq( '#actualPriceValue>strong' )->html();
+			}
+			if ( 0 == preg_match( '/[0-9]/', $appPrice ) ) {
+				$appPrice = '0';
+			}
+			if ( strpos( $appPrice, 'EUR' ) !== false ) {
+				$appPrice = str_replace( 'EUR ', '', $appPrice ) . '€';
+			}
+			$appIcon = pq( 'img[id*=main-image]' )->attr( 'src' );
+			$appAuthor = pq( 'div.buying:first>span>a' )->html();
+			$appExtend = 'mobileapp';
+			$appAuthorURL = preg_replace("/http/", "https", pq( 'div.buying:first>span>a' )->attr( 'href' ), 1);
+			$appScreenshots = array();
+			foreach ( pq( 'img[class*=thumb][class!=border thumb0 selected]' ) as $appShots ) {
+				$appScreenshot = str_replace( '30', '300', pq( $appShots )->attr( 'src' ) );
+				$appScreenshot = str_replace( '._SL160_', '', $appScreenshot );
+				if ( '' != Trim( $appScreenshot ) ) $appScreenshots[] = $appScreenshot;
+			}
+			if ( false !== strpos( pq( 'meta[name="title"]' )->attr( 'content' ), 'Alexa Skills' ) ) {
+				$appTitle = strip_tags( pq( '.a2s-title-content' )->html() );
+				$appAuthor = explode( ' ', Trim( pq( ' .a2s-title span' )->html() ), 2 );
+				$appAuthor = $appAuthor[1];
+				$appIcon = pq( 'div.a2s-skill-icon img.a2s-product-image' )->attr( 'src' );
+				$appRating = substr( Trim( pq( 'div#avgRating span' )->html() ), 0, 3);
+				$appExtend = 'alexaskill';
+			}
+			$appURL = $pageURL;
+			if ( '' == Trim( $appTitle ) ) {
+				wpAppbox_errorOutput( 'function: getAmazonAppsFallback() ---> No app data found' );
+				return( false );
+			}
+			//App-Daten in Array schreiben
+			$appData['id'] = $cacheID;
+			$appData['app_id'] = $appID;
+			$appData['app_url'] = $appURL;
+			$appData['app_icon'] = $appIcon;
+			$appData['app_title'] = trim( $appTitle );
+			$appData['app_author'] = trim( $appAuthor );
+			$appData['app_author_url'] = $appAuthorURL;
+			$appData['app_price'] = $appPrice;
+			$appData['app_rating'] = $appRating;
+			$appData['app_extend'] = $appExtend;
+			$appData['store_name'] = 'Amazon Apps';
+			$appData['store_name_css'] = $storeID;
+			$appData['app_screenshots'] = $appScreenshots;
+			return( $appData );
+		}
+		wpAppbox_errorOutput( 'function: getAmazonAppsFallback() ---> Get no app information' );
+		return( false );
+	}
+		
+	
+	/**
+	* Informationen von Good Old Games (GOG.com) auslesen
+	*
+	* @since   2.3.0
+	* @change  4.0.0
+	*
+	* @param   string  $appID    ID der App
+	* @param   string  $storeID  ID des Stores (wird fest vergeben)
+	* @return  array   $appData  Array der App-Daten
+	*/
+	
+	function getGoodOldGames( $appID, $cacheID, $storeID = 'goodoldgames' ) {
+		$pageURL = $this->getStoreURL( $storeID, $appID );
+		$thisContent = $this->getContent( $pageURL );
+		//wpAppbox_errorOutput( $thisContent );
+		$appData = array();
+		if ( isset( $thisContent[0] ) && '200' == $thisContent[1]['http_code']) {
+			wpAppbox_errorOutput( 'function: getGoodOldGames() ---> Get app information' );
+			phpQuery::newDocumentHTML( $thisContent[0] );
+			$error_found = pq( "title" )->html();
+			if ( strpos( $error_found, "404" ) !== false ) {
+				return( false );
+			}
+			$appTitle = pq( 'meta[name="og:title"]' )->attr( 'content' );
+			$appURL = pq( 'meta[name="og:url"]' )->attr( 'content' );
+			$appIcon = pq( 'meta[name="og:image"]' )->attr( 'content' );
+			
+			$appPrice = pq( 'meta[itemprop="price"]' )->attr('content');
+			if ( '0' != $appPrice ) {
+				if ( pq( 'meta[itemprop="priceCurrency"]' )->attr( 'content' ) == 'EUR' ) {
+					$appPrice = str_replace( '.', ',', $appPrice );
+					$appPrice .= ' €';
+				} else if ( pq( 'meta[itemprop="priceCurrency"]' )->attr( 'content' ) == 'USD' ) {
+					$appPrice = '$' . $appPrice;
+				} else {
+					$appPrice .= pq( 'meta[itemprop="priceCurrency"]' )->attr('content');
+				}
+			}
+			
+			$appAuthor = pq( 'div.product-details__data a[itemtype="http://schema.org/PropertyValue"] span[content="publisher"]+span[itemprop="value"]' )->attr('content');
+			$appAuthorURL = 'https://www.gog.com' . pq( 'div.product-details__data a[itemtype="http://schema.org/PropertyValue"]' )->attr( 'href' );
+			
+			$appRating = 0;
+			foreach ( pq( 'span.header__rating>i' ) as $stars ) {
+				$stars = pq( $stars )->attr( 'class' );
+				if ( $stars == 'ic icon-star-full' ) {
+					$appRating = $appRating + 1;
+				} else if ( $stars == 'ic icon-star-half' ) { 
+					$appRating = $appRating + 0.5;
+				}
+			}
+			$appScreenshots = array();
+			foreach ( pq( '.screen-tmb__img') as $appShots ) {
+				$appScreenshot = str_replace( '_112', '_600', pq( $appShots )->attr( 'src' ) );
+				if ( '' != Trim( $appScreenshot ) ) {
+					$appScreenshots[] = trim( $appScreenshot );
+				}
+			}
+			//App-Daten in Array schreiben
+			$appData['id'] = $cacheID;
+			$appData['app_id'] = $appID;
+			$appData['app_url'] = $appURL;
+			$appData['app_icon'] = $appIcon;
+			$appData['app_title'] = trim( $appTitle );
+			$appData['app_author'] = trim( $appAuthor );
+			$appData['app_author_url'] = $appAuthorURL;
+			$appData['app_price'] = $appPrice;
+			$appData['app_rating'] = $appRating;
+			$appData['store_name'] = 'GOG.com';
+			$appData['store_name_css'] = $storeID;
+			$appData['app_screenshots'] = $appScreenshots;
+			return( $appData );
+		}
+		wpAppbox_errorOutput( 'function: getGoodOldGames() ---> Get no app information' );
+		return( false );
+	}
+	
+	
+	/**
+	* Informationen aus dem Steam Store auslesen
+	*
+	* @since   1.8.5
+	* @change  4.0.41
+	*
+	* @param   string  $appID    ID der App
+	* @param   string  $storeID  ID des Stores (wird fest vergeben)
+	* @return  array   $appData  Array der App-Daten
+	*/
+	
+	function getSteam( $appID, $cacheID, $storeID = 'steam' ) {
+		$pageURL = $this->getStoreURL( $storeID, $appID );
+		$thisContent = $this->getContent( $pageURL );
+		$thisContent = $this->getContent( $pageURL );
+		$thisContent = json_decode( $thisContent[0] );
+		//wpAppbox_errorOutput( $thisContent );
+		$appData = array();
+		if ( '1' == $thisContent->$appID->success ) {
+			wpAppbox_errorOutput( 'function: getSteam() ---> Get app information' );
+			$thisContent = $thisContent->$appID->data;
+			$appTitle = $thisContent->name;
+			$appURL = 'http://store.steampowered.com/app/'.$appID.'/';
+			$appIcon = $thisContent->header_image;
+			foreach ( $thisContent->developers as $devs ) {
+				/*$appAuthor .= ", <a href=\"http://store.steampowered.com/search/?developer=$devs\">$devs</a>";*/
+				$appAuthor .= ", $devs";
+			}
+			$appAuthor = substr( $appAuthor, 2 );
+			$currency = $thisContent->price_overview->currency;
+			$appPrice = $thisContent->price_overview->final  / 100;
+			if ( 'EUR' == $currency ) {
+				$appPrice = str_replace( '.', ',', $appPrice ) . ' €';
+			} elseif ( 'USD' == $currency ) { 
+				$appPrice = '$ ' . $appPrice;
+			} else {
+				$appPrice = $appPrice.' '.$currency;
+			}
+			$appScreenshots = array();
+			foreach ( $thisContent->screenshots as $appShots ) {
+				$appScreenshots[] = $appShots->path_thumbnail;
+			}
+			//App-Daten in Array schreiben
+			$appData['id'] = $cacheID;
+			$appData['app_id'] = $appID;
+			$appData['app_url'] = $appURL;
+			$appData['app_icon'] = $appIcon;
+			$appData['app_title'] = trim( $appTitle );
+			$appData['app_author'] = trim( $appAuthor );
+			$appData['app_price'] = $appPrice;
+			$appData['app_rating'] = '-1';
+			$appData['store_name'] = 'Steam';
+			$appData['store_name_css'] = $storeID;
+			$appData['app_screenshots'] = $appScreenshots;
+			return( $appData );
+		}
+		wpAppbox_errorOutput( 'function: getSteam() ---> Get no app information' );
+		return( false );
+	}
+	
+	
+	/**
+	* Informationen aus dem (Mac) App Store auslesen
+	*
+	* @since   1.0.0
+	* @change  4.0.63
+	*
+	* @param   string  $appID    ID der App
+	* @param   string  $storeID  ID des Stores (wird fest vergeben)
+	* @return  array   $appData  Array der App-Daten
+	*/
+	
+	function getAppStore( $appID, $cacheID, $storeID = 'appstore' ) {
+		$pageURL = $this->getStoreURL( $storeID, $appID );
+		if ( strpos( $appID, "bundle" ) !== false ) {
+			$pageURL = str_replace( 'app/id', '', $pageURL );
+		}
+		$thisContent = $this->getContent( $pageURL );
+		//wpAppbox_errorOutput( $thisContent );
+		$appData = array();
+		if ( isset( $thisContent[0]) && '200' == $thisContent[1]['http_code'] ) {
+			wpAppbox_errorOutput( 'function: getAppStore() ---> Get app information' );
+			phpQuery::newDocumentHTML( $thisContent[0] );
+			$error_found = pq( 'script#shoebox-ember-data-store' )->html();
+			if ( '' == $error_found ) {
+				return( false );
+			}
+			$jsonData = json_decode( pq( 'script#shoebox-ember-data-store' )->html() );
+			$appExtend = array();
+			$appTitle = $jsonData->data->attributes->name;
+			$appURL = $jsonData->data->attributes->url;
+			$appIcon = pq( 'img.we-artwork__image' )->attr( 'src' );
+			$appAuthor = $jsonData->included['1']->attributes->name;
+			$appAuthorURL = $jsonData->included['1']->attributes->url;
+			if ( '' == $appAuthor ) {
+				$appAuthor = pq( 'h2.product-header__identity > a' )->text();
+				$appAuthorURL = pq( 'h2.product-header__identity > a' )->attr( 'href' );
+			}
+			$appRating = $jsonData->data->attributes->userRating->value;
+			if ( '0' == $jsonData->included['0']->attributes->price ) $appPrice = '0';
+			else $appPrice = $jsonData->included['0']->attributes->priceFormatted;
+			if ( isset( $jsonData->data->attributes->softwareInfo->hasInAppPurchases ) ) $appHasIAP = true;
+			else $appHasIAP = '0';
+			if ( isset( $jsonData->data->attributes->isSiriSupported ) )
+				$appExtend['issirisupported'] = true;
+			if ( isset( $jsonData->data->attributes->isAppleWatchSupported ) )
+				$appExtend['watchapp'] = true;
+			if ( isset( $jsonData->data->attributes->isPreorder ) )
+				$appExtend['ispreorder'] = true;
+			if ( isset( $jsonData->data->attributes->hasMessagesExtension ) )
+				$appExtend['imessageapp'] = true;
+			if ( isset( $jsonData->data->attributes->isHiddenFromSpringboard ) )
+				$appExtend['imessage-only'] = true;
+			if ( in_array( 'tvos', $jsonData->data->attributes->deviceFamilies ) )
+				$appExtend['appletv'] = true;
+			if ( isset( $jsonData->data->attributes->deviceFamilies ) && ( 1 == count( $jsonData->data->attributes->deviceFamilies ) ) && ( 'tvos' == $jsonData->data->attributes->deviceFamilies['0'] ) )	
+				$appExtend['appletvonly'] = true;
+			if ( 'macSoftware' == $jsonData->included['0']->attributes->assets['0']->flavor ) {
+				$storeName = 'Mac App Store';
+				$storeNameCSS = 'macappstore';
+			} else {
+				$storeName = 'App Store';
+				$storeNameCSS = 'appstore';
+			}
+			$appScreenshots = array();
+			if ( !empty( $jsonData->data->relationships->macScreenshots ) ) {
+				foreach ( pq( '.we-screenshot-viewer picture.we-artwork--screenshot-platform-mac img') as $appShots ) {
+					$appScreenshot = pq( $appShots )->attr( 'src' );
+					$appScreenshots[] = $appScreenshot;
+				}
+			}
+			if ( !empty( $jsonData->data->relationships->iphoneScreenshots ) ) {
+				foreach ( pq( '.we-screenshot-viewer picture.we-artwork--screenshot-platform-iphone img') as $appShots ) {
+					$appScreenshot = str_replace( '128x', '650x', pq( $appShots )->attr( 'src' ) );
+					$appScreenshots['iphone'][] = $appScreenshot;
+				}
+			}
+			if ( !empty( $jsonData->data->relationships->ipadScreenshots ) ) {
+				$tempContent = $this->getContent( $pageURL . '?platform=ipad' );
+				phpQuery::newDocumentHTML( $tempContent[0] );
+				foreach ( pq( '.we-screenshot-viewer picture.we-artwork--screenshot-platform-ipad img') as $appShots ) {
+					$appScreenshot = pq( $appShots )->attr( 'src' );
+					$appScreenshots['ipad'][] = $appScreenshot;
+				}
+			}
+			if ( !empty( $jsonData->data->relationships->appleWatchScreenshots ) ) {
+				$tempContent = $this->getContent( $pageURL . '?platform=appleWatch' );
+				phpQuery::newDocumentHTML( $tempContent[0] );
+				foreach ( pq( '.we-screenshot-viewer picture.we-artwork--screenshot-platform-appleWatch img') as $appShots ) {
+					$appScreenshot = pq( $appShots )->attr( 'src' );
+					$appScreenshot = str_replace( '128x', '650x', pq( $appShots )->attr( 'src' ) );
+					$appScreenshots['watch'][] = $appScreenshot;
+				}
+			}
+			if ( !empty( $jsonData->data->relationships->messagesScreenshots ) ) {
+				$tempContent = $this->getContent( $pageURL . '?platform=messages' );
+				phpQuery::newDocumentHTML( $tempContent[0] );
+				foreach ( pq( '.we-screenshot-viewer picture.we-artwork--screenshot-platform-messages img') as $appShots ) {
+					$appScreenshot = pq( $appShots )->attr( 'src' );
+					$appScreenshot = str_replace( '128x', '650x', pq( $appShots )->attr( 'src' ) );
+					$appScreenshots['imessage'][] = $appScreenshot;
+				}
+			}
+			if ( isset( $appExtend['appletvonly'] ) && !empty( $jsonData->data->relationships->appleTVScreenshots ) ) {
+				foreach ( pq( '.we-screenshot-viewer picture.we-artwork--screenshot-platform-appleTV img') as $appShots ) {
+					$appScreenshot = pq( $appShots )->attr( 'src' );
+					$appScreenshots['appletv'][] = $appScreenshot;
+				}
+			}
+			//App-Daten in Array schreiben
+			$appData['id'] = $cacheID;
+			$appData['app_id'] = $appID;
+			$appData['app_url'] = $appURL;
+			$appData['app_icon'] = $appIcon;
+			$appData['app_title'] = trim( $appTitle );
+			$appData['app_author'] = trim( $appAuthor );
+			$appData['app_author_url'] = $appAuthorURL;
+			$appData['app_price'] = $appPrice;
+			$appData['app_has_iap'] = $appHasIAP;
+			$appData['app_extend'] = $appExtend;
+			$appData['app_rating'] = $appRating;
+			$appData['store_name'] = $storeName;
+			$appData['store_name_css'] = $storeNameCSS;
+			$appData['app_screenshots'] = $appScreenshots;
+			return( $appData );
+		}
+		wpAppbox_errorOutput( 'function: getAppStore() ---> Get no app information' );
+		return( false );
+	}
+	
+	
+	/**
+	* Informationen aus dem WordPress-Plugin-Verzeichnis auslesen
+	*
+	* @since   1.7.0
+	* @change  4.0.34
+	*
+	* @param   string  $appID    ID der App
+	* @param   string  $storeID  ID des Stores (wird fest vergeben)
+	* @return  array   $appData  Array der App-Daten
+	*/
+	
+	function getWordPress( $appID, $cacheID, $storeID = 'wordpress' ) {
+		$pageURL = $this->getStoreURL( $storeID, $appID );
+		$thisContent = $this->getContent( urldecode( $pageURL ) );
+		//wpAppbox_errorOutput( $thisContent );
+		$appData = array();
+		if ( isset( $thisContent[0] ) && '200' == $thisContent[1]['http_code'] ) {
+			wpAppbox_errorOutput( 'function: getWordPress() ---> Get app information' );
+			phpQuery::newDocumentHTML( $thisContent[0] );
+			$error_found = pq( "Oops! " )->text();
+			if ( $error_found != '' ) {
+				return( false );
+			}
+			$appRating = pq( 'div.wporg-ratings' )->attr( 'data-rating' );
+			$appIcon_R = preg_match( '/<style type=\'text\/css\'>\#plugin-icon-.* \{ background-image: url\(\'(https:\/\/ps.w.org\/.*.png)\?rev.*/m', $thisContent[0], $appIcon );
+			if ( $appIcon_R ):
+				$appIcon = $appIcon[1];
+			else:
+				$appIcon = plugins_url('wp-appbox/img/wordpress-logo.png');
+			endif;
+			$appTitle = pq( 'h1.plugin-title' )->text();
+			$appAuthor = pq( 'span.byline .author.vcard>a' )->text();
+			if ( 1 < substr_count($thisContent[0], '<div class=\'plugin-contributor-info\'>' ) ) {
+				$appAuthor = esc_html__('various', 'wp-appbox');
+				$appAuthorURL = $pageURL;
+			} else {
+				$appAuthor = pq( 'span.byline .author.vcard>a' )->text();
+				$appAuthorURL = pq( 'span.byline .author.vcard>a' )->attr( 'href' );
+			}
+			$appPrice = '0';
+			$appScreenshots = array();
+			foreach ( pq( 'ul.plugin-screenshots a') as $appShots ) {
+				$appScreenshot = pq( $appShots )->attr( 'href' );
+				$appScreenshots[] = $appScreenshot;
+			}
+			$appURL = $pageURL;
+			//App-Daten in Array schreiben
+			$appData['id'] = $cacheID;
+			$appData['app_id'] = $appID;
+			$appData['app_url'] = $appURL;
+			$appData['app_icon'] = $appIcon;
+			$appData['app_title'] = trim( $appTitle );
+			$appData['app_author'] = trim( $appAuthor );
+			$appData['app_author_url'] = $appAuthorURL;
+			$appData['app_rating'] = $appRating;
+			$appData['app_price'] = $appPrice;
+			$appData['store_name'] = 'WordPress';
+			$appData['store_name_css'] = $storeID;
+			$appData['app_screenshots'] = $appScreenshots;
+			return( $appData );
+		}
+		wpAppbox_errorOutput( 'function: getWordPress() ---> Get no app information' );
+		return( false );
+	}
+		
+	
+	/**
+	* Informationen aus dem Windows Store auslesen
+	*
+	* @since   1.0.0
+	* @change  4.0.58
+	*
+	* @param   string  $appID    ID der App
+	* @param   string  $storeID  ID des Stores (wird fest vergeben)
+	* @return  array   $appData  Array der App-Daten
+	*/
+	
+	function getWindowsStore( $appID, $cacheID, $storeID = 'windowsstore' ) {
+		$pageURL = $this->getStoreURL( $storeID, $appID );
+		$old_phone_app = false;
+		if ( strlen( $appID ) > 20 ) {
+			$pageURL = 'https://www.windowsphone.com/s?appId=' . $appID;
+			$old_phone_app = true;
+		}
+		$thisContent = $this->getContent( $pageURL );
+		//wpAppbox_errorOutput( $thisContent );
+		$appData = array();
+		if ( isset( $thisContent[0] ) && '200' == $thisContent[1]['http_code'] ) {
+			wpAppbox_errorOutput( 'function: getWindowsStore() ---> Get app information' );
+			phpQuery::newDocumentHTML( $thisContent[0] );
+			if ( 'Your request appears to be from an automated process' == pq( 'title' )->html() ) {
+				wpAppbox_errorOutput( 'function: getWindowsStore() ---> Microsoft blocks your server requests due to automated process. :-(' );
+				return( false );
+			}
+			$appExtend = array();
+			$error_found = pq( 'meta[name="ms.prod_type"]' )->attr( 'content' );
+			if ( ( 'Apps' != $error_found ) && ( 'Games' != $error_found ) && ( 'AddOns' != $error_found ) ) {
+				return( false );
+			}
+			$appURL = pq( 'link[rel="canonical"]' )->attr( 'href' );
+			if ( $old_phone_app ) {
+				$new_item_id = preg_replace( "/https:\/\/www.microsoft.com\/.*-.*\/store\/apps\/.*\/(.*)/i", "$1", $appURL );
+				return( $this->getWindowsStore( $new_item_id, $cacheID ) );
+			}
+			if ( '' != ( trim( pq( 'div.pi-price-text span.x-screen-reader' )->html() ) ) ) {
+				$appHasIAP = true;
+			} else {
+				$appHasIAP = false;
+			}
+			$appURL = preg_replace( "/(https:\/\/www.microsoft.com\/)(.*)(store\/apps\/.*\/.*)/i", "$1$3", $appURL );
+			$appTitle = pq( 'meta[name="ms.prod"]' )->attr( 'content' );
+			if (  '0' == pq( 'meta[itemprop="price"]' )->attr( 'content' ) ):
+				$appPrice = '0';
+			else:
+				$appPrice = trim( pq( 'meta[itemprop="price"]' )->attr( 'content' ) );
+			endif;
+			$oldPrice = trim( pq( 'div#productPrice .pi-price-text s' )->html() );
+			if ( '' != $oldPrice ) {
+				$appExtend['oldPrice'] = $oldPrice;
+			}
+			$appAuthor = pq( 'div#publisher div span' )->html();
+			$appRating = pq( 'div#ratingSummary div.c-rating' )->attr( 'data-value' );
+			$appIcon = pq( 'div#productImage:first picture.c-image img' )->attr( 'src' );
+			if ( '' == $appIcon ) {
+				$appIcon = pq( 'div#image:first picture.c-image img' )->attr( 'src' );
+			}
+			if ( !strpos( $appIcon, 'xboxlive.com/image?' ) )
+				$appIcon = substr( $appIcon, 0, strrpos( $appIcon, '?' ) ) . '?format=jpg&h=75&q=80';
+			//$appBackground = pq( 'img.cli_image:first' )->attr( 'style' );
+			//$appBackground = preg_replace( "/.*background-color: (.*);[ ].*/i", "$1", $appBackground );
+			//$appExtend['windowsstorebg'] = $appBackground;
+			$appScreenshots = array();
+			foreach ( pq( 'div[data-key="mobile"] picture.c-image img') as $appShots ) {
+				$appScreenshot = pq( $appShots )->attr( 'data-src' );
+				$appScreenshot = substr( $appScreenshot, 0, strrpos( $appScreenshot, '?' ) ) . '?format=jpg&h=500&q=80';
+				$appScreenshots['mobile'][] = $appScreenshot;
+			}
+			foreach ( pq( 'div[data-key="desktop"] picture.c-image img') as $appShots ) {
+				$appScreenshot = pq( $appShots )->attr( 'data-src' );
+				$appScreenshot = substr( $appScreenshot, 0, strrpos( $appScreenshot, '?' ) ) . '?format=jpg&h=500&q=80';
+				$appScreenshots['desktop'][] = $appScreenshot;
+			}
+			foreach ( pq( 'div[data-key="xbox"] picture.c-image img') as $appShots ) {
+				$appScreenshot = pq( $appShots )->attr( 'data-src' );
+				if ( !strpos( $appIcon, 'xboxlive.com/image?' ) )
+					$appScreenshot = substr( $appScreenshot, 0, strrpos( $appScreenshot, '?' ) ) . '?format=jpg&h=500&q=80';
+				$appScreenshots['xbox'][] = $appScreenshot;
+			}
+			$appURL = $pageURL;
+			//App-Daten in Array schreiben
+			$appData['id'] = $cacheID;
+			$appData['app_id'] = $appID;
+			$appData['app_url'] = $appURL;
+			$appData['app_icon'] = $appIcon;
+			$appData['app_title'] = trim( $appTitle );
+			$appData['app_author'] = trim( $appAuthor );
+			$appData['app_rating'] = $appRating;
+			$appData['app_has_iap'] = $appHasIAP;
+			$appData['app_price'] = trim( $appPrice );
+			if ( isset( $appExtend ) ) {
+				$appData['app_extend'] = $appExtend;
+			}
+			$appData['store_name'] = 'Windows Store';
+			$appData['store_name_css'] = $storeID;
+			$appData['app_screenshots'] = $appScreenshots;
+			return( $appData );
+		}
+		if ( isset( $thisContent[0] ) && '403' == $thisContent[1]['http_code'] ) {
+			wpAppbox_errorOutput( 'function: getWindowsStore() ---> Access denied (403)' );
+		}
+		wpAppbox_errorOutput( 'function: getWindowsStore() ---> Get no app information' );
+		return( false );
+	}
+	
+	
+	/**
+	* Informationen aus dem Opera Addon-Archiv auslesen
+	*
+	* @since   1.7.5
+	* @change  4.0.31
+	*
+	* @param   string  $appID    ID der App
+	* @param   string  $storeID  ID des Stores (wird fest vergeben)
+	* @return  array   $appData  Array der App-Daten
+	*/
+	
+	function getOperaAddons( $appID, $cacheID, $storeID = 'operaaddons' ) {
+		$pageURL = $this->getStoreURL( $storeID, $appID );
+		$thisContent = $this->getContent( $pageURL );
+		//wpAppbox_errorOutput( $thisContent );
+		$appData = array();
+		if ( isset($thisContent[0]) && '200' == $thisContent[1]['http_code'] ) {
+			wpAppbox_errorOutput( 'function: getOperaAddons() ---> Get app information' );
+			phpQuery::newDocumentHTML( $thisContent[0] );
+			if ( '404' == pq( "div.contained>header>h2" )->text()) {
+				return( false );
+			} elseif ( NULL != pq( "div#unavailable" )->text() ) {
+				return( false );
+			}
+			$appRating = pq( 'p.rating>span[class="meter"]>span' )->attr( 'title' );
+			$appTitle = pq( 'meta[property="og:title"]' )->attr( 'content' );
+			$appIcon = pq( 'meta[property="og:image"]' )->attr( 'content' );
+			$appIcon = str_replace( 'http://addons.opera.com', '', $appIcon );
+			$appURL = pq( 'meta[property="og:url"]' )->attr( 'content' );
+			$appAuthor = pq( 'article.pkg-details h3.h-byline>a' )->html();
+			$appAuthorURL = 'https://addons.opera.com' . pq( 'article.pkg-details h3.h-byline>a' )->attr( 'href' );
+			$appPrice = '0';
+			$appScreenshots = array();
+			foreach ( pq( 'section.image-viewer li.thumbnail a') as $appShots ) {
+				$appScreenshot = 'https://addons.opera.com' . pq( $appShots )->attr( 'href' );
+				$appScreenshots[] = $appScreenshot;
+			}
+			$appURL = $pageURL;
+			//App-Daten in Array schreiben
+			$appData['id'] = $cacheID;
+			$appData['app_id'] = $appID;
+			$appData['app_url'] = $appURL;
+			$appData['app_icon'] = $appIcon;
+			$appData['app_title'] = trim( $appTitle );
+			$appData['app_author'] = trim( $appAuthor );
+			$appData['app_author_url'] = $appAuthorURL;
+			$appData['app_rating'] = $appRating;
+			$appData['app_price'] = $appPrice;
+			$appData['store_name'] = 'Opera Add-ons';
+			$appData['store_name_css'] = $storeID;
+			$appData['app_screenshots'] = $appScreenshots;
+			return( $appData );
+		}
+		wpAppbox_errorOutput( 'function: getOperaAddons() ---> Get no app information' );
+		return( false );
+	}
+	
+	
+	/**
+	* Informationen aus dem Firefox Addon-Verzeichnis auslesen
+	*
+	* @since   1.4.0
+	* @change  4.0.64
+	*
+	* @param   string  $appID    ID der App
+	* @param   string  $storeID  ID des Stores (wird fest vergeben)
+	* @return  array   $appData  Array der App-Daten
+	*/
+	
+	function getFirefoxAddon( $appID, $cacheID, $storeID = 'firefoxaddon' ) {
+		$pageURL = $this->getStoreURL( $storeID, $appID );
+		$thisContent = $this->getContent( $pageURL );
+		//wpAppbox_errorOutput( $thisContent );
+		$appData = array();
+		if ( isset( $thisContent[0] ) && '200' == $thisContent[1]['http_code'] ) {
+			wpAppbox_errorOutput( 'function: getFirefoxAddon() ---> Get app information' );
+			phpQuery::newDocumentHTML( $thisContent[0] );
+			$error_found = pq( '.NotFound' )->html();
+			if ( $error_found != '' ) {
+				wpAppbox_errorOutput( 'function: getFirefoxAddon() ---> Get no app information' );
+				return( false );
+			}
+			$appTitle = pq( 'h1.AddonTitle' )->html();
+			$appTitle = Trim( preg_replace( '/<span[^>]*>([\s\S]*?)<\/span[^>]*>/', '', $appTitle ) );
+			$appAuthor = pq( 'span.AddonTitle-author > a' )->html();
+			$appAuthorURL = pq( 'span.AddonTitle-author > a' )->attr( 'href' );
+			$appIcon = pq( 'img.Addon-icon-image' )->attr( 'src' );
+			$appPrice = '0';
+			$appRating = 0;
+			foreach ( pq( 'div.Rating-selected-star') as $tempRating )
+				$appRating = $appRating + 1;
+			foreach ( pq( 'div.Rating-half-star') as $tempRating )
+				$appRating = $appRating + 0.5;
+			$appScreenshots = array();
+			foreach ( pq( 'div.pswp-thumbnail img.ScreenShots-image') as $appShots ) {
+				$appScreenshot = pq( $appShots )->attr( 'src' );
+				$appScreenshots[] = $appScreenshot;
+			}
+			$appURL = $pageURL;
+			//App-Daten in Array schreiben
+			$appData['id'] = $cacheID;
+			$appData['app_id'] = $appID;
+			$appData['app_url'] = $appURL;
+			$appData['app_icon'] = $appIcon;
+			$appData['app_title'] = trim( $appTitle );
+			$appData['app_author'] = trim( $appAuthor );
+			$appData['app_author_url'] = $appAuthorURL;
+			$appData['app_rating'] = $appRating;
+			$appData['app_price'] = $appPrice;
+			$appData['store_name'] = 'Firefox Add-ons';
+			$appData['store_name_css'] = $storeID;
+			$appData['app_screenshots'] = $appScreenshots;
+			return( $appData );
+		}
+		wpAppbox_errorOutput( 'function: getFirefoxAddon() ---> Get no app information' );
+		return( false );
+	}
+	
+	
+	/**
+	* Informationen aus dem Chrome Web Store auslesen
+	*
+	* @notice  Keine Screenshots
+	*
+	* @since   1.0.0
+	* @change  4.0.0
+	*
+	* @param   string  $appID    ID der App
+	* @param   string  $storeID  ID des Stores (wird fest vergeben)
+	* @return  array   $appData  Array der App-Daten
+	*/
+	
+	function getChromeWebStore( $appID, $cacheID, $storeID = 'chromewebstore' ) {
+		$pageURL = $this->getStoreURL( $storeID, $appID );
+		$thisContent = $this->getContent( $pageURL );
+		if ( '301' == $thisContent[1]['http_code'] ) {
+			$thisContent = $this->getContent( $thisContent[1]['redirect_url'] );
+		} else if ('0' == $thisContent[1]['http_code'] ) {
+			$thisContent = $this->getContent( urldecode( 'https://chrome.google.com' . $thisContent[1]['url'] ) );
+		}
+		//wpAppbox_errorOutput( $thisContent );
+		$appData = array();
+		if ( isset( $thisContent[0] ) && '200' == $thisContent[1]['http_code'] ) {
+			wpAppbox_errorOutput( 'function: getChromeWebStore() ---> Get app information' );
+			phpQuery::newDocumentHTML( $thisContent[0] );
+			$error_found = pq( "#error-section" )->text();
+			if ( $error_found != '' ) {
+				return( false );
+			}
+			$appRating = pq( 'meta[itemprop="ratingValue"]' )->attr( 'content' );
+			$appIcon = pq( 'meta[property="og:image"]' )->attr( 'content' );
+			$appURL = pq( 'meta[property="og:url"]' )->attr( 'content' );
+			$appTitle = pq( 'meta[property="og:title"]' )->attr( 'content' );
+			if ( '' != pq( 'a.e-f-y' )->html() ) {
+				$appAuthor = pq( 'a.e-f-y' )->html(); 
+				$appAuthorURL = pq( 'a.e-f-y' )->attr( 'href' );
+			} else if ( '' != pq( 'div.e-f-Me.e-f-Xi-oc' )->html() ) {
+				$appAuthor = pq( 'div.e-f-Me.e-f-Xi-oc' )->html();
+				$appAuthor = end ( explode( ' ', $appAuthor, 3 ) );
+				if ( parse_url( $appAuthor ) ) {
+					$appAuthorURL = "http://$appAuthor";
+				}
+			} else if ( '' != pq( 'span.e-f-Me > a' )->html() ) { 
+				$appAuthor = pq( 'span.e-f-Me > a' )->html();
+				$appAuthor = end ( explode( ' ', $appAuthor, 3 ) );
+				$appAuthorURL = pq( 'a.e-f-y' )->attr( 'href' );
+				if ( '' == $appAuthorURL ) {
+					$appAuthorURL = $appURL;
+				}
+			} else if ( '' != pq( 'span.e-f-Me' )->html() ) { 
+				$appAuthor = pq( 'span.e-f-Me' )->html();
+				$appAuthor = end ( explode( ' ', $appAuthor, 3 ) );
+				$appAuthorURL = pq( 'a.e-f-y' )->attr( 'href' );
+				if ( '' == $appAuthorURL ) {
+					$appAuthorURL = $appURL;
+				}
+			} else {
+				$appAuthor = esc_html__('Unknown', 'wp-appbox');
+				$appAuthorURL = $appURL;
+			}
+			if ( '$0' == pq( 'meta[itemprop="price"]' )->attr( 'content' ) ) {
+				$appPrice = '0';
+			} else {
+				$appPrice = '0';
+			}
+			$appScreenshots = array();
+			foreach ( pq( 'img[aria-hidden="true"]') as $appShots ) {
+				$appScreenshot = pq( $appShots )->attr( 'src' );
+				$appScreenshots[] = $appScreenshot;
+			}
+			//App-Daten in Array schreiben
+			$appData['id'] = $cacheID;
+			$appData['app_id'] = $appID;
+			$appData['app_url'] = $appURL;
+			$appData['app_icon'] = $appIcon;
+			$appData['app_title'] = trim( $appTitle );
+			$appData['app_author'] = trim( $appAuthor );
+			$appData['app_author_url'] = $appAuthorURL;
+			$appData['app_rating'] = $appRating;
+			$appData['app_price'] = $appPrice;
+			$appData['store_name'] = 'Chrome Web Store';
+			$appData['store_name_css'] = $storeID;
+			$appData['app_screenshots'] = $appScreenshots;
+			return( $appData );
+		}
+		wpAppbox_errorOutput( 'function: getChromeWebStore() ---> Get no app information' );
+		return( false );
+	}	
+	
+	
+	/**
+	* Informationen aus den XDA Labs auslesen
+	*
+	* @since   3.4.8
+	* @change  4.0.16
+	*
+	* @param   string  $appID    ID der App
+	* @param   string  $storeID  ID des Stores (wird fest vergeben)
+	* @return  array   $appData  Array der App-Daten
+	*/
+	
+	function getXDA( $appID, $cacheID, $storeID = 'xda' ) {
+		$pageURL = $this->getStoreURL( $storeID, $appID );
+		$thisContent = $this->getContent( $pageURL );
+		//wpAppbox_errorOutput( $thisContent );
+		$appData = array();
+		if ( isset( $thisContent[0] ) && '200' == $thisContent[1]['http_code'] ) {
+			wpAppbox_errorOutput( 'function: getXDA() ---> Get app information' );
+			phpQuery::newDocumentHTML( $thisContent[0] );
+			$error_found = pq( "body>h1" )->html();
+			if ( 'Not Found' == $error_found ) {
+				return( false );
+			}
+			
+			//App-Daten aus der HTML-Seite auslesen
+			$appURL = $pageURL;
+			$appIcon = pq( 'link[rel="shortcut icon"]' )->attr( 'href' );
+			$appTitle = str_replace( 'XDA Labs | ' , '', pq( 'meta[property="og:title"]' )->attr( 'content' ) );
+			$appAuthor = pq( 'div.card-content>div>p>a' )->html();
+			$appPrice = '0';
+			$appRating = Trim( pq( 'div#about_card div.content:contains("Reviews")' )->html() );
+			$appRating = substr( $appRating, 0, 4);
+			if ( $appRating != '') {
+				if ( $appRating != 0) {
+					switch ( $appRating ) {
+						case ( $appRating < 0.5 ):
+						$appRating = 0;
+						break;
+						case ( $appRating >= 0.5 && $appRating < 1 ):
+						$appRating = 0.5;
+						break;
+						case ( $appRating >= 1 && $appRating < 1.5 ):
+						$appRating = 1;
+						break;
+						case ( $appRating >= 1.5 && $appRating < 2 ):
+						$appRating = 1.5;
+						break;
+						case ( $appRating >= 2 && $appRating < 2.5 ):
+						$appRating = 2;
+						break;
+						case ( $appRating >= 2.5 && $appRating < 3 ):
+						$appRating = 2.5;
+						break;
+						case ( $appRating >= 3 && $appRating < 3.5 ):
+						$appRating = 3;
+						break;
+						case ( $appRating >= 3.5 && $appRating < 4 ):
+						$appRating = 3.5;
+						break;
+						case ( $appRating >= 4 && $appRating < 4.5 ):
+						$appRating = 4;
+						break;
+						case ( $appRating >= 4.5 && $appRating < 5 ):
+						$appRating = 4.5;
+						break;
+						case ( $appRating == 5 ):
+						$appRating = 5;
+						break;
+					}
+				}
+			}
+			$appScreenshots = array();
+			foreach ( pq( 'div.hide-on-large-only div.card-content>div>img.responsive-img' ) as $appShots ) {
+				$appScreenshot = pq( $appShots )->attr( 'src' );
+				$appScreenshots[] = $appScreenshot;
+			}
+			$appURL = $pageURL;
+			//App-Daten in Array schreiben
+			$appData['id'] = $cacheID;
+			$appData['app_id'] = $appID;
+			$appData['app_url'] = $appURL;
+			$appData['app_icon'] = $appIcon;
+			$appData['app_title'] = trim( $appTitle );
+			$appData['app_author'] = trim( $appAuthor );
+			$appData['app_author_url'] = $appAuthorURL;
+			$appData['app_price'] = $appPrice;
+			$appData['app_has_iap'] = ( ( isset( $appHasIAP ) && $appHasIAP ) ? true : false );
+			$appData['app_rating'] = $appRating;
+			$appData['store_name'] = 'XDA Labs';
+			$appData['store_name_css'] = $storeID;
+			$appData['app_screenshots'] = $appScreenshots;
+			return( $appData );
+		}
+		wpAppbox_errorOutput( 'function: getXDA() ---> Get no app information' );
+		return( false );
+	}
+	
+} /* Class beenden */
+
+?>

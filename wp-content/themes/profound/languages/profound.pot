@@ -1,0 +1,629 @@
+# Copyright (C) 2016 mudThemes
+# This file is distributed under the GNU General Public License, v2 (or newer).
+msgid ""
+msgstr ""
+"Project-Id-Version: Profound 1.0.8.4\n"
+"Report-Msgid-Bugs-To: http://wordpress.org/support/theme/profound\n"
+"POT-Creation-Date: 2016-04-05 11:04:01+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2016-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+
+#: archive.php:14
+msgid "Daily Archives:"
+msgstr ""
+
+#: archive.php:16
+msgid "Monthly Archives:"
+msgstr ""
+
+#: archive.php:16
+msgctxt "monthly archives date format"
+msgid "F Y"
+msgstr ""
+
+#: archive.php:18
+msgid "Yearly Archives:"
+msgstr ""
+
+#: archive.php:18
+msgctxt "yearly archives date format"
+msgid "Y"
+msgstr ""
+
+#: archive.php:20
+msgid "Blog Archives"
+msgstr ""
+
+#: archive.php:23
+msgid "Archive of posts published in the specified"
+msgstr ""
+
+#: author.php:12
+msgid "Author Archives"
+msgstr ""
+
+#: author.php:17
+msgid "Archive of the posts written by author:"
+msgstr ""
+
+#: category.php:11
+msgid "Category Archives"
+msgstr ""
+
+#: category.php:17 tag.php:18
+msgid "Archive of posts published in the category:"
+msgstr ""
+
+#: comments.php:11
+msgid ""
+"This post is password protected. Enter the password to view any comments"
+msgstr ""
+
+#: comments.php:18
+msgid "Comment"
+msgid_plural "Comments"
+msgstr[0] ""
+msgstr[1] ""
+
+#: comments.php:31
+msgid "Older Comments"
+msgstr ""
+
+#: comments.php:35
+msgid "Newer Comments"
+msgstr ""
+
+#: comments.php:42
+msgid "Sorry, Comments are closed."
+msgstr ""
+
+#: content/general/404.php:12
+msgid "Ooops! Nothing Found"
+msgstr ""
+
+#: content/general/404.php:13 content/general/404.php:14
+msgid "Nothing found for:"
+msgstr ""
+
+#: content/general/404.php:21
+msgid ""
+"Apologies, but no results were found. Perhaps searching will help find "
+"required content."
+msgstr ""
+
+#: content/general/footer.php:12
+msgid "Copyright"
+msgstr ""
+
+#: content/general/footer.php:12
+msgid "Powered by"
+msgstr ""
+
+#: content/general/footer.php:12
+msgid "Profound theme by"
+msgstr ""
+
+#: functions.php:89
+msgid "Primary Menu"
+msgstr ""
+
+#: functions.php:153 functions.php:155
+msgid "Right Sidebar"
+msgstr ""
+
+#: functions.php:164 functions.php:166
+msgid "Footerbox Sidebar #1"
+msgstr ""
+
+#: functions.php:175 functions.php:177
+msgid "Footerbox Sidebar #2"
+msgstr ""
+
+#: functions.php:186 functions.php:188
+msgid "Footerbox Sidebar #3"
+msgstr ""
+
+#: functions.php:573
+msgid "Day"
+msgstr ""
+
+#: functions.php:575
+msgid "Month"
+msgstr ""
+
+#: functions.php:577
+msgid "Year"
+msgstr ""
+
+#: functions.php:579
+msgid "Period"
+msgstr ""
+
+#: functions.php:602
+msgid "Newer posts"
+msgstr ""
+
+#: functions.php:603
+msgid "Older posts"
+msgstr ""
+
+#: functions.php:619
+msgctxt "Previous post link"
+msgid "&rarr;"
+msgstr ""
+
+#: functions.php:620
+msgctxt "Next post link"
+msgid "&larr;"
+msgstr ""
+
+#: functions.php:706
+msgid "Your comment is awaiting moderation."
+msgstr ""
+
+#: functions.php:731
+msgid "%1$s at %2$s"
+msgstr ""
+
+#: functions.php:736 functions.php:748
+msgid "(Edit)"
+msgstr ""
+
+#: functions.php:746
+msgid "Pingback:"
+msgstr ""
+
+#: functions.php:765 includes/customizer.php:401 includes/customizer.php:697
+#: includes/customizer.php:891
+msgid "Blog"
+msgstr ""
+
+#: header.php:42 includes/customizer.php:479 includes/customizer.php:866
+msgid "Menu"
+msgstr ""
+
+#: home.php:11
+msgid "Our Blog"
+msgstr ""
+
+#: includes/customizer.php:27
+msgid "General"
+msgstr ""
+
+#: includes/customizer.php:34
+msgid "Blog Heading"
+msgstr ""
+
+#: includes/customizer.php:44
+msgid "Blog Heading (Homepage)"
+msgstr ""
+
+#: includes/customizer.php:56
+msgid "Blog Description (Homepage)"
+msgstr ""
+
+#: includes/customizer.php:67 includes/customizer.php:323
+#: includes/customizer.php:583 includes/customizer.php:782
+msgid "Header"
+msgstr ""
+
+#: includes/customizer.php:74 includes/customizer.php:84
+msgid "Site Logo"
+msgstr ""
+
+#: includes/customizer.php:98 includes/customizer.php:108
+msgid "Favicon"
+msgstr ""
+
+#: includes/customizer.php:121 includes/customizer.php:500
+#: includes/customizer.php:879
+msgid "Slideshow"
+msgstr ""
+
+#: includes/customizer.php:128
+msgid "Slide #1"
+msgstr ""
+
+#: includes/customizer.php:138
+msgid "Slideshow Image #1"
+msgstr ""
+
+#: includes/customizer.php:150
+msgid "Slideshow Heading #1"
+msgstr ""
+
+#: includes/customizer.php:161
+msgid "Slide #2"
+msgstr ""
+
+#: includes/customizer.php:171
+msgid "Slideshow Image #2"
+msgstr ""
+
+#: includes/customizer.php:183
+msgid "Slideshow Heading #2"
+msgstr ""
+
+#: includes/customizer.php:194
+msgid "Settings"
+msgstr ""
+
+#: includes/customizer.php:204
+msgid "Slideshow Speed"
+msgstr ""
+
+#: includes/customizer.php:217
+msgid "Slideshow Animation Speed"
+msgstr ""
+
+#: includes/customizer.php:230
+msgid "Hide Navigation"
+msgstr ""
+
+#: includes/customizer.php:242
+msgid "Smooth Height"
+msgstr ""
+
+#: includes/customizer.php:254
+msgid "Animation Type"
+msgstr ""
+
+#: includes/customizer.php:267
+msgid "Slideshow Direction"
+msgstr ""
+
+#: includes/customizer.php:279
+msgid "Layout"
+msgstr ""
+
+#: includes/customizer.php:286 includes/customizer.php:549
+msgid "Global"
+msgstr ""
+
+#: includes/customizer.php:297
+msgid "Select Layout"
+msgstr ""
+
+#: includes/customizer.php:301
+msgid "Boxed Mode"
+msgstr ""
+
+#: includes/customizer.php:312
+msgid "Hide Blog Heading (Homepage)"
+msgstr ""
+
+#: includes/customizer.php:333
+msgid "Hide Header"
+msgstr ""
+
+#: includes/customizer.php:345
+msgid "Hide Site Description"
+msgstr ""
+
+#: includes/customizer.php:356 includes/customizer.php:1022
+msgid "Footer"
+msgstr ""
+
+#: includes/customizer.php:366
+msgid "Company Name"
+msgstr ""
+
+#: includes/customizer.php:378
+msgid "Hide Footer"
+msgstr ""
+
+#: includes/customizer.php:390
+msgid "Show Copyright"
+msgstr ""
+
+#: includes/customizer.php:411
+msgid "Hide Thumbnail"
+msgstr ""
+
+#: includes/customizer.php:423
+msgid "Hide Post Meta"
+msgstr ""
+
+#: includes/customizer.php:435
+msgid "Hide Post Meta (Comments)"
+msgstr ""
+
+#: includes/customizer.php:447
+msgid "Hide Bottom Navigation"
+msgstr ""
+
+#: includes/customizer.php:458
+msgid "Posts"
+msgstr ""
+
+#: includes/customizer.php:468
+msgid "Hide Meta"
+msgstr ""
+
+#: includes/customizer.php:489
+msgid "Hide Menu"
+msgstr ""
+
+#: includes/customizer.php:510
+msgid "Hide Featured Section"
+msgstr ""
+
+#: includes/customizer.php:521 includes/customizer.php:1045
+msgid "Social"
+msgstr ""
+
+#: includes/customizer.php:531
+msgid "Disable Social Section"
+msgstr ""
+
+#: includes/customizer.php:542
+msgid "Colors"
+msgstr ""
+
+#: includes/customizer.php:558
+msgid "Skins"
+msgstr ""
+
+#: includes/customizer.php:569
+msgid "Select Skin"
+msgstr ""
+
+#: includes/customizer.php:573
+msgid "Classic White"
+msgstr ""
+
+#: includes/customizer.php:593 includes/customizer.php:792
+msgid "Site Title"
+msgstr ""
+
+#: includes/customizer.php:605 includes/customizer.php:805
+msgid "Site Description"
+msgstr ""
+
+#: includes/customizer.php:616
+msgid "Page/Posts"
+msgstr ""
+
+#: includes/customizer.php:626 includes/customizer.php:707
+#: includes/customizer.php:901 includes/customizer.php:949
+msgid "Post Title"
+msgstr ""
+
+#: includes/customizer.php:638 includes/customizer.php:731
+#: includes/customizer.php:927 includes/customizer.php:975
+msgid "Post Content"
+msgstr ""
+
+#: includes/customizer.php:650
+msgid "Post Meta (Only Posts)"
+msgstr ""
+
+#: includes/customizer.php:662
+msgid "Links (unvisited)"
+msgstr ""
+
+#: includes/customizer.php:674
+msgid "Links (visited)"
+msgstr ""
+
+#: includes/customizer.php:686
+msgid "Links (hover)"
+msgstr ""
+
+#: includes/customizer.php:719 includes/customizer.php:914
+#: includes/customizer.php:962
+msgid "Post Meta"
+msgstr ""
+
+#: includes/customizer.php:743
+msgid "Date Background"
+msgstr ""
+
+#: includes/customizer.php:754 includes/customizer.php:764
+msgid "Custom CSS"
+msgstr ""
+
+#: includes/customizer.php:775
+msgid "Fonts"
+msgstr ""
+
+#: includes/customizer.php:818
+msgid "Site Title (Size)"
+msgstr ""
+
+#: includes/customizer.php:831
+msgid "Site Description (Size)"
+msgstr ""
+
+#: includes/customizer.php:843
+msgid "Body"
+msgstr ""
+
+#: includes/customizer.php:853
+msgid "Body Font"
+msgstr ""
+
+#: includes/customizer.php:939
+msgid "Posts/Pages"
+msgstr ""
+
+#: includes/customizer.php:987
+msgid "Sidebars"
+msgstr ""
+
+#: includes/customizer.php:997
+msgid "Widget Title (Footerbox)"
+msgstr ""
+
+#: includes/customizer.php:1010
+msgid "Widget Body (Footerbox)"
+msgstr ""
+
+#: includes/customizer.php:1032
+msgid "Footer Text"
+msgstr ""
+
+#: includes/customizer.php:1052
+msgid "Social Profiles"
+msgstr ""
+
+#: includes/customizer.php:1062
+msgid "Facebook"
+msgstr ""
+
+#: includes/customizer.php:1074
+msgid "Twitter"
+msgstr ""
+
+#: includes/customizer.php:1086
+msgid "Google+"
+msgstr ""
+
+#: includes/customizer.php:1098
+msgid "Linkedin"
+msgstr ""
+
+#: includes/customizer.php:1110
+msgid "Instagram"
+msgstr ""
+
+#: includes/customizer.php:1122
+msgid "Pinterest"
+msgstr ""
+
+#: includes/customizer.php:1134
+msgid "Skype"
+msgstr ""
+
+#: includes/customizer.php:1146
+msgid "Tumblr"
+msgstr ""
+
+#: includes/customizer.php:1158
+msgid "RSS"
+msgstr ""
+
+#: includes/customizer.php:1169
+msgid "About Profound Theme"
+msgstr ""
+
+#: includes/customizer_extended.php:19
+msgid "Theme Documentation"
+msgstr ""
+
+#: includes/customizer_extended.php:20
+msgid "Contact us"
+msgstr ""
+
+#: loop.php:18
+msgid "Permalink to"
+msgstr ""
+
+#: loop.php:23
+msgid "Written on"
+msgstr ""
+
+#: loop.php:24
+msgid "by"
+msgstr ""
+
+#: loop.php:28
+msgid "No comments yet"
+msgstr ""
+
+#: loop.php:28
+msgid "1 comment"
+msgstr ""
+
+#: loop.php:28
+msgid "comments"
+msgstr ""
+
+#: loop.php:28
+msgid "No Comments"
+msgstr ""
+
+#: loop.php:44 page.php:21 single.php:32 templates/sidebar-right.php:22
+msgid "Pages:"
+msgstr ""
+
+#: page.php:25 single.php:36 templates/sidebar-right.php:24
+msgid "Edit"
+msgstr ""
+
+#: search.php:11
+msgid "Search Results"
+msgstr ""
+
+#: search.php:12
+msgid "We have found following content based on your search query:"
+msgstr ""
+
+#: searchform.php:11
+msgid "Search..."
+msgstr ""
+
+#: searchform.php:12
+msgid "Go"
+msgstr ""
+
+#: sidebar.php:11
+msgid "Recent Posts"
+msgstr ""
+
+#: sidebar.php:16
+msgid "Search"
+msgstr ""
+
+#: single.php:15
+msgid "Posted on"
+msgstr ""
+
+#: single.php:15
+msgid "By"
+msgstr ""
+
+#: single.php:21
+msgid "View all posts by %s"
+msgstr ""
+
+#: single.php:37
+msgid "Tags: "
+msgstr ""
+
+#: tag.php:11
+msgid "Tag Archives"
+msgstr ""
+
+#. Theme Name of the plugin/theme
+msgid "Profound"
+msgstr ""
+
+#. Theme URI of the plugin/theme
+msgid "http://www.mudthemes.com/profound"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid ""
+"Profound is a clean, beautiful and responsive theme useful for personal "
+"blogging, corporate or magazine blogs. Profound has a single menu with 4 "
+"sidebars which consist of a beautiful Footer box and a slideshow section "
+"with text overlay. Profound is fully Translation ready and comes with 100% "
+"GPL license and online documentation."
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "mudThemes"
+msgstr ""
+
+#. Author URI of the plugin/theme
+msgid "http://www.mudthemes.com"
+msgstr ""
+
+#. Template Name of the plugin/theme
+msgid "Right Sidebar Template"
+msgstr ""

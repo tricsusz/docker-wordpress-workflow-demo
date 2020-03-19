@@ -1,0 +1,43 @@
+/* Tablet and Mobile */
+
+@media only screen and (max-width:768px) {
+	
+	/* Text */
+
+	body, .comment-text {
+		font: 15px/1.6 "Helvetica Neue", Helvetica, sans-serif;	
+		overflow-x: hidden;
+		-webkit-overflow-scrolling: touch;
+		padding-left:10px;
+		padding-right:10px;
+	}
+	/* Layout */
+	#content{width:100%}
+	#sidebar{width:100%}
+	#sidebars{width:100%}
+	#articles {width:100%}
+	
+	#nav li {
+	float: none;
+	position: relative;
+}
+#nav a {
+	line-height: 2.333em;
+	padding: 5px;
+	padding-left:10px;
+}
+
+#nav ul ul {
+    top: 36px;
+    left:0px;
+    z-index:99;
+	width:100%;
+	display:none;
+	float:left;
+	margin:0 0 0 0;
+	position: absolute;
+}
+
+	
+
+}
