@@ -1,19 +1,19 @@
 <?php
 
-
-/* Für das shice Tabellen-Prefix von WordPress */
 /**
-* Link-Umwandlung für das Amazon PartnerNet
+* Für das shice Tabellen-Prefix von WordPress
 */
+
 global $wpdb;
 
 
 /**
 * Ein paar Definitionen #YOLO
 */
+
 define( 'WPAPPBOX_MIN_PHPVERSION', '5.3' );
 define( 'WPAPPBOX_PLUGIN_NAME', 'WP-Appbox' ); 
-define( 'WPAPPBOX_PLUGIN_VERSION', '4.1.2' );
+define( 'WPAPPBOX_PLUGIN_VERSION', '4.1.27' );
 define( 'WPAPPBOX_DB_VERSION', '1.0.4' );
 define( 'WPAPPBOX_PREFIX', 'wpAppbox_' );
 define( 'WPAPPBOX_AFFILIATE_AMAZON', 'wpappbox-21' );
@@ -24,6 +24,7 @@ define( 'WPAPPBOX_AFFILIATE_MICROSOFT_PROGRAM', '7806' );
 /**
 * Festlegen der Standard-Einstellungen
 */
+
 global $wpAppbox_optionsDefault;
 $wpAppbox_optionsDefault = array(
 	'pluginVersion' => WPAPPBOX_PLUGIN_VERSION,
@@ -55,7 +56,7 @@ $wpAppbox_optionsDefault = array(
 	'autoLinks' => false,
 	'utmSource' => false,
 	'anonymizeLinks' => false,
-	'renderGutenberg' => true,
+	'renderGutenberg' => false,
 	'disableDefer' => false,
 	'includeCSS' => intval( '0' ),
 	'disableFonts' => false,
@@ -73,7 +74,6 @@ $wpAppbox_optionsDefault = array(
 
 define( 'WPAPPBOX_CACHINGTIME', ( get_option('wpAppbox_cacheTime') != '' ? get_option('wpAppbox_cacheTime') : $wpAppbox_optionsDefault['cacheTime'] ) ); 
 define( 'WPAPPBOX_BLOCKMISSINGTIME', ( get_option('wpAppbox_blockMissingTime') != '' ? get_option('wpAppbox_blockMissingTime') : $wpAppbox_optionsDefault['blockMissingTime'] ) ); 
-
 define( 'WPAPPBOX_PLUGIN_BASE_DIR', basename( dirname( __FILE__ ) ) ); // Ornder wp-content/plugins/wp-appbox/
 define( 'WPAPPBOX_PLUGIN_BASE_DOMAIN', get_site_url() . '/' . basename( dirname( __FILE__ ) ) ); // http://domain.de/wp-content/...
 define( 'WPAPPBOX_PLUGIN_PATH', plugin_dir_path( __FILE__ ) ); // Server-Path
@@ -84,6 +84,7 @@ define( 'WPAPPBOX_CACHE_DIR', content_url() . '/cache/wp-appbox/' );
 /**
 * Zuweisung Store-ID => Store-Bezeichnung
 */
+
 global $wpAppbox_storeNames;	
 $wpAppbox_storeNames = array(	
 	'amazonapps' => __( 'Amazon Apps', 'wp-appbox' ),
@@ -102,7 +103,8 @@ $wpAppbox_storeNames = array(
 						
 /**
 * Zuweisung Style-ID => Style-Name...
-*/							
+*/					
+		
 global $wpAppbox_styleNames;
 $wpAppbox_styleNames = array(
 	'0' => 'standard',
@@ -115,7 +117,8 @@ $wpAppbox_styleNames = array(
 			
 /**
 * ...denn nicht alle Stores können alle Styles anzeigen. FU Chrome Web Store -.-
-*/					
+*/			
+		
 global $wpAppbox_storeStyles;
 $wpAppbox_storeStyles = array(	
 	'amazonapps' => array( 1, 2, 3, 4 ),
@@ -131,6 +134,10 @@ $wpAppbox_storeStyles = array(
 	'xda' => array( 1, 2, 3, 4 )
 );
 
+
+/**
+* Länder und Regionen für den Microsoft Store definieren
+*/	
 
 global $wpAppbox_MicrosoftPrivateAffiliateProgramm;
 $wpAppbox_MicrosoftPrivateAffiliateProgramm = array(
@@ -152,6 +159,31 @@ $wpAppbox_MicrosoftPrivateAffiliateProgramm = array(
 	__( 'GCR (Taiwan, Hong Kong, China) ', 'wp-appbox' ) => array( '7808', '439031' ),
 );
 ksort( $wpAppbox_MicrosoftPrivateAffiliateProgramm );
+
+
+/**
+* Länder und Regionen für den Zugriff auf die Amazon API definieren
+*/	
+
+global $wpAppbox_AmazonAPIregions;
+$wpAppbox_AmazonAPIregions = array(
+	__( 'Australia', 'wp-appbox' ) => array( 'webservices.amazon.com.au', 'us-west-2' ),
+	__( 'Brazil', 'wp-appbox' ) => array( 'webservices.amazon.com.br', '	us-east-1' ),
+	__( 'Canada', 'wp-appbox' ) => array( 'webservices.amazon.ca', 'us-east-1' ),
+	__( 'France', 'wp-appbox' ) => array( 'webservices.amazon.fr', 'eu-west-1' ),
+	__( 'Germany', 'wp-appbox' ) => array( 'webservices.amazon.de', 'eu-west-1' ),
+	__( 'India', 'wp-appbox' ) => array( 'webservices.amazon.in', 'eu-west-1' ),
+	__( 'Italy', 'wp-appbox' ) => array( 'webservices.amazon.it', 'eu-west-1' ),
+	__( 'Japan', 'wp-appbox' ) => array( 'webservices.amazon.co.jp', 'us-west-2' ),
+	__( 'Mexico', 'wp-appbox' ) => array( 'webservices.amazon.com.mx', 'us-east-1' ),
+	__( 'Singapore', 'wp-appbox' ) => array( 'webservices.amazon.sg', 'us-west-2' ),
+	__( 'Spain', 'wp-appbox' ) => array( 'webservices.amazon.es', 'eu-west-1' ),
+	__( 'Turkey', 'wp-appbox' ) => array( 'webservices.amazon.com.tr', 'eu-west-1' ),
+	__( 'United Arab Emirates', 'wp-appbox' ) => array( 'webservices.amazon.ae', 'eu-west-1' ),
+	__( 'United Kingdom', 'wp-appbox' ) => array( 'webservices.amazon.co.uk', 'eu-west-1' ),
+	__( 'United States', 'wp-appbox' ) => array( 'webservices.amazon.com', 'us-east-1' ),
+);
+ksort( $wpAppbox_AmazonAPIregions );
 
 
 ?>

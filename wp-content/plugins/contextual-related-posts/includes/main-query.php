@@ -6,7 +6,7 @@
  * @author    Ajay D'Souza
  * @license   GPL-2.0+
  * @link      https://webberzone.com
- * @copyright 2009-2018 Ajay D'Souza
+ * @copyright 2009-2019 Ajay D'Souza
  */
 
 // If this file is called directly, abort.
@@ -26,7 +26,7 @@ function get_crp( $args = array() ) {
 	global $post, $crp_settings;
 
 	// If set, save $exclude_categories.
-	if ( isset( $args['exclude_categories'] ) && '' != $args['exclude_categories'] ) {
+	if ( isset( $args['exclude_categories'] ) && '' != $args['exclude_categories'] ) { // phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison
 		$exclude_categories   = explode( ',', $args['exclude_categories'] );
 		$args['strict_limit'] = false;
 	}
@@ -34,9 +34,11 @@ function get_crp( $args = array() ) {
 		'is_widget'    => false,
 		'is_shortcode' => false,
 		'is_manual'    => false,
+		'is_block'     => false,
 		'echo'         => true,
 		'heading'      => true,
 		'offset'       => 0,
+		'extra_class'  => '',
 	);
 	$defaults = array_merge( $defaults, $crp_settings );
 
@@ -49,13 +51,16 @@ function get_crp( $args = array() ) {
 	}
 
 	// Support caching to speed up retrieval.
-	if ( ! empty( $args['cache'] ) ) {
+	if ( ! empty( $args['cache'] ) && empty( $args['cache_posts'] ) && ! ( is_preview() || is_admin() || ( defined( 'REST_REQUEST' ) && REST_REQUEST ) ) ) {
 		$meta_key = 'crp_related_posts';
 		if ( $args['is_widget'] ) {
 			$meta_key .= '_widget';
 		}
 		if ( $args['is_manual'] ) {
 			$meta_key .= '_manual';
+		}
+		if ( $args['is_block'] ) {
+			$meta_key .= '_block';
 		}
 		if ( is_feed() ) {
 			$meta_key .= '_feed';
@@ -89,16 +94,17 @@ function get_crp( $args = array() ) {
 	 */
 	$custom_template = apply_filters( 'crp_custom_template', null, $results, $args );
 	if ( ! empty( $custom_template ) ) {
-		if ( ! empty( $args['cache'] ) ) {
+		if ( ! empty( $args['cache'] ) && empty( $args['cache_posts'] ) && ! ( is_preview() || is_admin() || ( defined( 'REST_REQUEST' ) && REST_REQUEST ) ) ) {
 			update_post_meta( $post->ID, $meta_key, $custom_template, '' );
 		}
 		return $custom_template;
 	}
 
-	$widget_class    = $args['is_widget'] ? 'crp_related_widget' : 'crp_related ';
+	$widget_class    = $args['is_widget'] ? 'crp_related_widget ' : 'crp_related ';
 	$shortcode_class = $args['is_shortcode'] ? 'crp_related_shortcode ' : '';
+	$block_class     = $args['is_block'] ? 'crp_related_block ' : '';
 
-	$post_classes = $widget_class . $shortcode_class;
+	$post_classes = $widget_class . $shortcode_class . $block_class . ' ' . $args['extra_class'];
 
 	/**
 	 * Filter the classes added to the div wrapper of the Contextual Related Posts.
@@ -127,7 +133,7 @@ function get_crp( $args = array() ) {
 			$resultid = crp_object_id_cur_lang( $result->ID );
 
 			// If this is NULL or already processed ID or matches current post then skip processing this loop.
-			if ( ! $resultid || in_array( $resultid, $processed_results ) || intval( $resultid ) === intval( $post->ID ) ) {
+			if ( ! $resultid || in_array( $resultid, $processed_results ) || intval( $resultid ) === intval( $post->ID ) ) { // phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
 				continue;
 			}
 
@@ -224,7 +230,7 @@ function get_crp( $args = array() ) {
 	$output .= '</div>'; // Closing div of 'crp_related'.
 
 	// Support caching to speed up retrieval.
-	if ( ! empty( $args['cache'] ) ) {
+	if ( ! empty( $args['cache'] ) && empty( $args['cache_posts'] ) && ! ( is_preview() || is_admin() || ( defined( 'REST_REQUEST' ) && REST_REQUEST ) ) ) {
 		update_post_meta( $post->ID, $meta_key, $output, '' );
 	}
 
@@ -246,7 +252,7 @@ function get_crp( $args = array() ) {
  * @since 1.9
  *
  * @param array $args Arguments array.
- * @return object $results
+ * @return object $results Array of related post objects
  */
 function get_crp_posts_id( $args = array() ) {
 	global $wpdb, $post, $crp_settings;
@@ -263,7 +269,7 @@ function get_crp_posts_id( $args = array() ) {
 
 	$defaults = array(
 		'postid'       => false,  // Get related posts for a specific post ID.
-		'strict_limit' => true, // If this is set to false, then it will fetch 5x posts.
+		'strict_limit' => true, // If this is set to false, then it will fetch 3x posts.
 		'offset'       => 0,  // Offset the related posts returned by this number.
 	);
 	$defaults = array_merge( $defaults, $crp_settings );
@@ -291,6 +297,13 @@ function get_crp_posts_id( $args = array() ) {
 
 	if ( ! $source_post ) {
 		$source_post = $post;
+	}
+
+	$random_order = ( $args['random_order'] || ( isset( $args['ordering'] ) && 'random' === $args['ordering'] ) ) ? true : false;
+
+	// If we need to order randomly then set strict_limit to false.
+	if ( $random_order ) {
+		$args['strict_limit'] = false;
 	}
 
 	$limit  = ( $args['strict_limit'] ) ? $args['limit'] : ( $args['limit'] * 3 );
@@ -342,6 +355,15 @@ function get_crp_posts_id( $args = array() ) {
 		$match_fields_content[] = crp_excerpt( $source_post->ID, $args['match_content_words'], false );
 	}
 
+	// If keyword is entered, override the matching content.
+	$crp_post_meta = get_post_meta( $post->ID, 'crp_post_meta', true );
+
+	if ( isset( $crp_post_meta['keyword'] ) ) {
+		$match_fields_content = array(
+			$crp_post_meta['keyword'],
+		);
+	}
+
 	/**
 	 * Filter the fields that are to be matched.
 	 *
@@ -371,7 +393,7 @@ function get_crp_posts_id( $args = array() ) {
 	$now             = gmdate( 'Y-m-d H:i:s', ( time() + ( $time_difference * 3600 ) ) );
 
 	// Limit the related posts by time.
-	$current_time = current_time( 'timestamp', 0 );
+	$current_time = strtotime( current_time( 'mysql' ) );
 	$from_date    = $current_time - ( absint( $args['daily_range'] ) * DAY_IN_SECONDS );
 	$from_date    = gmdate( 'Y-m-d H:i:s', $from_date );
 
@@ -379,10 +401,15 @@ function get_crp_posts_id( $args = array() ) {
 	if ( is_int( $source_post->ID ) ) {
 
 		// Fields to return.
-		$fields = " $wpdb->posts.ID ";
+		$fields = " $wpdb->posts.ID, $wpdb->posts.post_date ";
+
+		// Set order by in case of date.
+		if ( isset( $args['ordering'] ) && 'date' === $args['ordering'] ) {
+			$orderby = " $wpdb->posts.post_date DESC ";
+		}
 
 		// Create the base MATCH clause.
-		$match = $wpdb->prepare( ' AND MATCH (' . $match_fields . ') AGAINST (%s) ', $stuff ); // WPCS: unprepared SQL ok.
+		$match = $wpdb->prepare( ' AND MATCH (' . $match_fields . ') AGAINST (%s) ', $stuff ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 
 		/**
 		 * Filter the MATCH clause of the query.
@@ -425,8 +452,12 @@ function get_crp_posts_id( $args = array() ) {
 		$where  = $match;
 		$where .= $now_clause;
 		$where .= $from_clause;
-		$where .= " AND $wpdb->posts.post_status = 'publish' ";                 // Only show published posts.
-		$where .= $wpdb->prepare( " AND {$wpdb->posts}.ID != %d ", $source_post->ID );  // Show posts after the date specified.
+		$where .= " AND $wpdb->posts.post_status IN ('publish','inherit') "; // Only show published posts or attachments.
+		$where .= $wpdb->prepare( " AND {$wpdb->posts}.ID != %d ", $source_post->ID );  // Don't include the current ID.
+
+		if ( isset( $args['same_author'] ) && $args['same_author'] ) {
+			$where .= $wpdb->prepare( " AND {$wpdb->posts}.post_author = %d ", $source_post->post_author );  // Show posts of same author.
+		}
 
 		// Convert exclude post IDs string to array so it can be filtered.
 		$exclude_post_ids = explode( ',', $args['exclude_post_ids'] );
@@ -441,9 +472,9 @@ function get_crp_posts_id( $args = array() ) {
 		$exclude_post_ids = apply_filters( 'crp_exclude_post_ids', $exclude_post_ids );
 
 		// Convert it back to string.
-		$exclude_post_ids = implode( ',', array_filter( $exclude_post_ids ) );
+		$exclude_post_ids = implode( ',', array_filter( array_filter( $exclude_post_ids, 'absint' ) ) );
 
-		if ( '' != $exclude_post_ids ) {
+		if ( '' != $exclude_post_ids ) { // phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison
 			$where .= " AND $wpdb->posts.ID NOT IN ({$exclude_post_ids}) ";
 		}
 
@@ -536,16 +567,41 @@ function get_crp_posts_id( $args = array() ) {
 
 		$sql = "SELECT DISTINCT $fields FROM $wpdb->posts $join WHERE 1=1 $where $groupby $having $orderby $limits";
 
-		$results = $wpdb->get_results( $sql ); // WPCS: unprepared SQL ok.
+		// Support caching to speed up retrieval.
+		if ( ! empty( $args['cache_posts'] ) && ! ( is_preview() || is_admin() || ( defined( 'REST_REQUEST' ) && REST_REQUEST ) ) ) {
 
-		if ( $args['random_order'] ) {
+			$attr = array(
+				'offset'           => $offset,
+				'limit'            => $limit,
+				'same_author'      => isset( $args['same_author'] ) && $args['same_author'],
+				'exclude_post_ids' => $exclude_post_ids,
+				'post_types'       => join( "', '", $post_types ),
+				'order_by'         => $orderby,
+				'is_ssl'           => is_ssl(),
+			);
+
+			$meta_key = crp_cache_get_key( $attr );
+
+			$results = get_post_meta( $post->ID, $meta_key, true );
+		}
+
+		if ( empty( $results ) ) {
+			$results = $wpdb->get_results( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
+		}
+
+		// Support caching to speed up retrieval.
+		if ( ! empty( $args['cache_posts'] ) && ! ( is_preview() || is_admin() || ( defined( 'REST_REQUEST' ) && REST_REQUEST ) ) ) {
+			update_post_meta( $post->ID, $meta_key, $results, '' );
+		}
+
+		if ( $random_order ) {
 			$results_array = (array) $results;
 			shuffle( $results_array );
 			$results = (object) $results_array;
 		}
 	} else {
 		$results = false;
-	}// End if.
+	}
 
 	/**
 	 * Filter object containing the post IDs.
@@ -557,3 +613,18 @@ function get_crp_posts_id( $args = array() ) {
 	return apply_filters( 'get_crp_posts_id', $results );
 }
 
+
+/**
+ * Get the meta key based on a list of parameters.
+ *
+ * @since 2.7.0
+ *
+ * @param array $attr   Array of attributes.
+ * @return string Cache meta key
+ */
+function crp_cache_get_key( $attr ) {
+
+	$meta_key = '_crp_cache_' . md5( wp_json_encode( $attr ) );
+
+	return $meta_key;
+}

@@ -7,7 +7,8 @@
  * handled by a callback to ascent_comment() which is
  * located in the includes/template-tags.php file.
  *
- * @package ascent
+ * @package Ascent
+ * @since 1.0.0 
  */
 
 /*
@@ -18,6 +19,8 @@
 if ( post_password_required() )
     return;
 ?>
+
+<?php ascent_comments_before(); ?>
 
 <div id="comments" class="comments-area">
 
@@ -100,9 +103,7 @@ if ( post_password_required() )
 
 	'comment_field' =>  '<p><textarea placeholder="Start typing..." id="comment" class="form-control" name="comment" cols="45" rows="8" aria-required="true"></textarea></p>',
 
-	'comment_notes_after' => '<p class="form-allowed-tags">' .
-	      __( 'You may use these <abbr title="HyperText Markup Language">HTML</abbr> tags and attributes:', 'ascent' ) .
-	      '</p><div class="alert alert-info">' . allowed_tags() . '</div>'
+	'comment_notes_after' => ''
 
 	// So, that was the needed stuff to have bootstrap basic styles for the form elements and buttons
 
@@ -112,3 +113,5 @@ if ( post_password_required() )
     ));
     ?>
 </div><!-- #comments -->
+
+<?php ascent_comments_after(); ?>

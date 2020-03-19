@@ -46,7 +46,14 @@
 	</div>
 	<div class="appdetails">
 		<div class="apptitle">{RELOADLINK}<a href="{APPLINK}" title="{TITLE_ATTR}" class="apptitle">{TITLE}</a></div>
-		<div class="developer"><?php _e('Developer', 'wp-appbox'); ?>: {DEVELOPERLINK}</div>
-		<div class="price"><span><?php _e('Price', 'wp-appbox'); ?>: {PRICE}</span> {RATING}</div>
+		<div class="developer">
+			<span class="label"><?php _e('Developer', 'wp-appbox'); ?>: </span>
+			<span class="value">{DEVELOPERLINK}</span>
+		</div>
+		<div class="price">
+			<span class="label"><?php _e('Price', 'wp-appbox'); ?>: </span>
+			<span class="value">{PRICE}</span> 
+			<span class="rating">{RATING}</span>
+		</div>
 	</div>
 </div>

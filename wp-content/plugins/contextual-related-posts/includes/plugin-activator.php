@@ -6,8 +6,13 @@
  * @author    Ajay D'Souza
  * @license   GPL-2.0+
  * @link      https://webberzone.com
- * @copyright 2009-2018 Ajay D'Souza
+ * @copyright 2009-2019 Ajay D'Souza
  */
+
+// If this file is called directly, abort.
+if ( ! defined( 'WPINC' ) ) {
+	die;
+}
 
 /**
  * Fired for each blog when the plugin is activated.
@@ -25,11 +30,11 @@ function crp_activate( $network_wide ) {
 	if ( is_multisite() && $network_wide ) {
 
 		// Get all blogs in the network and activate plugin on each one.
-		$blog_ids = $wpdb->get_col(
+		$blog_ids = $wpdb->get_col( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 			"
         	SELECT blog_id FROM $wpdb->blogs
 			WHERE archived = '0' AND spam = '0' AND deleted = '0'
-		"
+			"
 		);
 		foreach ( $blog_ids as $blog_id ) {
 			switch_to_blog( $blog_id );
@@ -54,11 +59,8 @@ register_activation_hook( CRP_PLUGIN_FILE, 'crp_activate' );
 function crp_single_activate() {
 	global $wpdb;
 
-	crp_read_options();
-
 	$wpdb->hide_errors();
 
-	crp_delete_index();
 	crp_create_index();
 
 	$wpdb->show_errors();
@@ -85,5 +87,4 @@ function crp_activate_new_site( $blog_id ) {
 
 }
 add_action( 'wpmu_new_blog', 'crp_activate_new_site' );
-
 

@@ -118,7 +118,7 @@ class wpAppbox_CreateOutput {
 	* Gibt die URL des QR-Code zurück
 	*
 	* @since   2.0.0
-	* @change  4.0.47
+	* @change  4.1.13
 	*
 	* @param   string  $appLink   URL der App
 	* @param   string  $appID     ID der App
@@ -137,7 +137,7 @@ class wpAppbox_CreateOutput {
 		$wpAppbox_CreateOutput_Helper = new wpAppbox_CreateOutput;
 		$appLink = $wpAppbox_CreateOutput_Helper->returnAppLink( $appLink, $appID );
 		$qrCode = urlencode( $appLink );
-		$qrCode = "https://chart.googleapis.com/chart?cht=qr&chl=$qrCode&chs=$size"."x"."$size&chld=$EC_level|$margin";
+		$qrCode = "https://chart.googleapis.com/chart?cht=qr&chl=$qrCode&chs=$size"."x"."$size&chld=$EC_level%7C$margin";
 		if ( !$onlyLink ):
 			$imageCache = new wpAppbox_imageCache;
 			$qrCode = $imageCache->cacheImages( $qrCode, $cacheID, 'qr' );
@@ -195,20 +195,11 @@ class wpAppbox_CreateOutput {
 	}
 	
 	
-	function searchArrayValueByKey(array $array, $search) {
-		foreach (new RecursiveIteratorIterator(new RecursiveArrayIterator($array)) as $key => $value) {
-		    if ($search === $key)
-			return $value;
-		}
-		return false;
-	    }
-	
-	
 	/**
 	* Gibt den Link zum Store zurück (mit Affiliate)
 	*
 	* @since   2.0.0
-	* @change  4.0.62
+	* @change  4.1.26
 	*
 	* @param   string  $appLink  URL der App
 	* @param   string  $appID    ID der App
@@ -220,13 +211,14 @@ class wpAppbox_CreateOutput {
 		/**
 		* Link-Umwandlung für das Amazon PartnerNet
 		*/
+		$affiliateID = '';
 		if ( preg_match( '/(?:https?\:\/\/)?(www.)?amazon\.(?:.{2,8})/i', $appLink ) && false === strpos( $appLink, 'play.google' ) ):
 			if ( get_option('wpAppbox_userAffiliate') ):
 				$authorID = get_the_author_meta('ID');
 				if ( get_option('wpAppbox_user_'.$authorID.'_ownAffiliateAmazon') ):
 					$affiliateID = Trim( get_option('wpAppbox_user_' . $authorID . '_affiliateAmazon') );
 				endif;
-				if ( ( wpAppbox_checkAmazonAPI() ) && ( '' != $affiliateID ) ):
+				if ( '' != $affiliateID ):
 					$appLink = str_replace( get_option( 'wpAppbox_affiliateAmazonID' ), $affiliateID, $appLink );
 					return( $appLink );
 				endif;
@@ -268,9 +260,11 @@ class wpAppbox_CreateOutput {
 						continue;
 					}
 				endforeach;
-				$appLink = 'http://afflnk.microsoft.com/c/' . $affiliateID . '/' . $creativeID . '/' . $programID . '?u=' . urlencode( $appLink );
+				$appLink = 'http://microsoft.msafflnk.net/c/' . $affiliateID . '/' . $creativeID . '/' . $programID . '?u=' . urlencode( $appLink );
 			endif;
 		endif;
+		if ( function_exists( 'wpAppbox_customAppURL' ) )
+			$appLink = wpAppbox_customAppURL( $appLink );
 		/**
 		* Links anonymisieren
 		*/
@@ -442,7 +436,7 @@ class wpAppbox_CreateOutput {
 	* Gibt den Reload-Link zurück
 	*
 	* @since   2.0.0
-	* @change  4.0.0
+	* @change  4.1.25
 	*
 	* @param   string  $cacheID  Cache-ID der App
 	* @return  string            HTML-Ausgabe des Reload-Links (<a></a>)
@@ -450,7 +444,7 @@ class wpAppbox_CreateOutput {
 	
 	function returnReloadLink( $cacheID ) {
 		if ( wpAppbox_isUserAuthor() ) {
-			return('<a href="' . get_permalink() . ( is_preview() ? '?preview=true&amp;' : '?' ) . 'wpappbox_reload_cache&amp;app_cache_id=' . $cacheID . '" title="' . __('Renew cached data of this app', 'wp-appbox') . '" class="reload-link">&#8635;</a> ');
+			return('<a href="' . get_permalink() . ( is_preview() ? '?preview=true&amp;' : '?' ) . 'wpappbox_reload_cache&amp;app_cache_id=' . $cacheID . '" title="' . __('Renew cached data of this app', 'wp-appbox') . '" class="reload-link">&#10227;</a>');
 		}
 	}
 	
@@ -525,7 +519,7 @@ class wpAppbox_CreateOutput {
 	* Rückgabe der eigentlich Appbox
 	*
 	* @since   2.0.0
-	* @change  4.0.59
+	* @change  4.1.24
 	*
 	* @param   array   $attr      Attribute des Shortcodes [WordPress]
 	* @return  string  $template  Rückgabe des fertigen Templates
@@ -543,10 +537,10 @@ class wpAppbox_CreateOutput {
 		* Attribute trennen => bestimmte Screenshot-Darstellung? -iphone -ipad -watch...
 		*/
 		$appType = '';
-		switch ( $attr['store'] ) {
+		switch ( $attr['store'] ):
 			case 'appstore':
 				if ( $attr['bundle'] == true )
-					$attr['appid'] = 'app-bundle/id' . $attr['appid'];
+					$attr['appid'] = 'bundle' . $attr['appid'];
 				if ( preg_match( '/-iphone/', $attr['appid'] ) ) {
 					$appType = 'iphone';
 				} else if ( preg_match( '/-ipad/', $attr['appid'] ) ) {
@@ -580,7 +574,7 @@ class wpAppbox_CreateOutput {
 				}
 				$attr['appid'] = str_replace( array( '-mobile', '-desktop', '-xbox', '-all' ), '', $attr['appid'] );
 			break;
-		}
+		endswitch;
 		
 		/**
 		* Neue API-Abfrage öffnen und durchführen
@@ -607,7 +601,7 @@ class wpAppbox_CreateOutput {
 		/**
 		* Caching der App-Images durchführen
 		*/
-		if ( wpAppbox_ImageCache::quickcheckImageCache() ) {
+		if ( wpAppbox_ImageCache::quickcheckImageCache() ):
 			$imageCache = new wpAppbox_imageCache;
 			$allImages = array();
 			if ( $imageCache->checkImageCacheType( 'appicon' ) )
@@ -617,12 +611,12 @@ class wpAppbox_CreateOutput {
 			if ( $imageCache->checkImageCacheType( 'qrcode' ) )
 				$allImages = $allImages + $imageCache->getURLarray( 'qr', $this->returnQRCode( $appData['app_url'], $appData['app_id'], $appData['id'] ) );
 			//$result = $imageCache->cacheImages( $allImages, $appData['id'] );
-		}
+		endif;
 		
 		/**
 		* Screenshots aufbereiten
 		*/
-		if ( 'screenshots' == $attr['style'] || 'screenshots-only' == $attr['style'] ) {
+		if ( 'screenshots' == $attr['style'] || 'screenshots-only' == $attr['style'] ) :
 			$appScreenshots = $this->returnScreenshots( $appData['app_screenshots'], $appData['store_name_css'], $appData['id'], $appType );
 			if ( ( 'screenshots' === $attr['style'] || 'screenshots-only' === $attr['style'] ) && '' == $appScreenshots ) {
 				$attr['style'] = get_option('wpAppbox_defaultStyle');
@@ -633,7 +627,7 @@ class wpAppbox_CreateOutput {
 			} else {
 				$template = str_replace( '{SCREENSHOTS}', $appScreenshots, $template );
 			}
-		}
+		endif;
 		
 		/**
 		* Wenn Feed, dann nur die Feedausgabe aktivieren
@@ -643,14 +637,16 @@ class wpAppbox_CreateOutput {
 		/**
 		* Gibt es eine extend-Variable, z.B. für Alexa-Infos?
 		*/
-		if ( !empty( $appData['app_extend'] ) ) {
-			if ( isset( $appData['app_extend']['alexaskill'] ) && $appData['app_extend']['alexaskill'] == true ) {
+		if ( !empty( $appData['app_extend'] ) ):
+			if ( isset( $appData['app_extend']['alexaskill'] ) && $appData['app_extend']['alexaskill'] == true )
 				$appData['store_name_css'] = 'amazonalexa';
-			}
-			if ( isset( $appData['app_extend']['oldPrice'] ) && $appData['app_extend']['oldPrice'] == true ) {
+			if ( isset( $appData['app_extend']['oldPrice'] ) && $appData['app_extend']['oldPrice'] == true )
 				$attr['oldprice'] = $appData['app_extend']['oldPrice'];
-			}
-		}
+			if ( isset( $appData['app_extend']['apple-arcade'] ) ):
+				$appData['app_price'] = esc_html__('Exclusive to Apple Arcade', 'wp-appbox');
+				$appData['app_price'] = str_replace( 'Apple Arcade', '<small>&#63743;</small>Arcade', $appData['app_price'] );
+			endif;
+		endif;
 		
 		/**
 		* Diverse Template-Variablen ersetzen
@@ -687,9 +683,14 @@ class wpAppbox_CreateOutput {
 		* Die CSS-Klassen für die Ausgabe erstellen
 		*/
 		$cssClasses = 'wpappbox wpappbox-' . $appData['id'] . ' ' . $appData['store_name_css'];
-		if ( get_option('wpAppbox_colorfulIcons') == true ) $cssClasses .= ' colorful';
-		if ( isset( $appData['app_extend']['ispreorder'] ) ) $cssClasses .= ' preorder';
-		if ( $appData['deprecated'] == true ) $cssClasses .= ' deprecated';
+		if ( get_option('wpAppbox_colorfulIcons') == true ) 
+			$cssClasses .= ' colorful';
+		if ( isset( $appData['app_extend']['ispreorder'] ) ) 
+			$cssClasses .= ' preorder';
+		if ( $appData['deprecated'] == true ) 
+			$cssClasses .= ' deprecated';
+		if ( isset( $appData['app_extend']['apple-arcade'] ) ) 
+			$cssClasses .= ' apple-arcade';
 		$template = str_replace( '{WPAPPBOXCSSCLASSES}', $cssClasses, $template );
 			
 		/**

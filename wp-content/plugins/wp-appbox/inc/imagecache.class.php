@@ -97,7 +97,7 @@ class wpAppbox_imageCache {
 	* Speichert externe App-Bilder auf dem eigenen Server
 	*
 	* @since   4.0.0
-	* @change  4.0.47
+	* @change  4.1.20
 	*
 	* @param   string/array  	$imageURL       		Die Bild-URL des Servers (mit http/https)
 	* @param   string  	 		$cacheID       			Die Cache-ID der App
@@ -154,6 +154,8 @@ class wpAppbox_imageCache {
 		
 		foreach ( $imageURLarray as $fileName => $theURL ):
 		
+			if ( strpos( $theURL, get_site_url() ) ) return( $theURL );
+			
 			$cacheImagePath = $cacheFolderPath . DIRECTORY_SEPARATOR . $fileName;
 			$cacheImageDir = $cacheFolderDir . DIRECTORY_SEPARATOR . $fileName;
 				
@@ -247,7 +249,7 @@ class wpAppbox_imageCache {
 	* Alle Bilder in ein Array schrauben
 	*
 	* @since   4.0.0
-	* @change  4.0.47
+	* @change  4.1.19
 	*
 	* @param   string  	 		$imgType     		Typ des Bildes [ai|ss|qr]
 	* @return  string/array		$imgURLs		 	URL der Bilder [string => appicon/qrcode | array => screenshots]
@@ -255,6 +257,8 @@ class wpAppbox_imageCache {
 	*/
 	
 	function getURLarray( $imgType, $imgURLs ) {
+		if ( '' == $imgURLs ) 
+			return( array( '' => '' ) );
 		$imgArray = array();
 		
 		if ( ( 'ai' == $imgType ) && ( '' != $imgURLs ) ):

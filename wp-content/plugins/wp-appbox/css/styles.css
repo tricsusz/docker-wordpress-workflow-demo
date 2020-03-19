@@ -102,6 +102,7 @@ div.wpappbox div.appicon img {
     margin: auto;
     border: 0;
     border-radius: 6px;
+	object-fit: cover;
 }
 
 div.wpappbox.compact div.appicon img {
@@ -422,6 +423,10 @@ div.wpappbox.appstore div.applinks {
 div.wpappbox.macappstore a.applinks,
 div.wpappbox.macappstore div.applinks {
     background: url(../img/macappstore.png);
+}
+
+div.wpappbox.apple-arcade span.price img.apple-arcade-logo {
+	margin-right: 2px;
 }
 
 div.wpappbox.googleplay a.applinks,

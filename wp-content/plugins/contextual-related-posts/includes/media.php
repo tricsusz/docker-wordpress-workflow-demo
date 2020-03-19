@@ -6,8 +6,13 @@
  * @author    Ajay D'Souza
  * @license   GPL-2.0+
  * @link      https://webberzone.com
- * @copyright 2009-2018 Ajay D'Souza
+ * @copyright 2009-2019 Ajay D'Souza
  */
+
+// If this file is called directly, abort.
+if ( ! defined( 'WPINC' ) ) {
+	die;
+}
 
 /**
  * Add custom image size of thumbnail. Filters `init`.
@@ -15,17 +20,18 @@
  * @since 2.0.0
  */
 function crp_add_image_sizes() {
-	global $crp_settings;
 
-	if ( ! in_array( $crp_settings['thumb_size'], get_intermediate_image_sizes(), true ) ) {
-		$crp_settings['thumb_size'] = 'crp_thumbnail';
+	$thumb_size = crp_get_option( 'thumb_size' );
+
+	if ( ! in_array( $thumb_size, get_intermediate_image_sizes() ) ) { // phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
+		$thumb_size = 'crp_thumbnail';
 	}
 
 	// Add image sizes if 'crp_thumbnail' is selected or the selected thumbnail size is no longer valid.
-	if ( 'crp_thumbnail' === $crp_settings['thumb_size'] ) {
-		$width  = empty( $crp_settings['thumb_width'] ) ? 150 : $crp_settings['thumb_width'];
-		$height = empty( $crp_settings['thumb_height'] ) ? 150 : $crp_settings['thumb_height'];
-		$crop   = isset( $crp_settings['thumb_crop'] ) ? $crp_settings['thumb_crop'] : false;
+	if ( 'crp_thumbnail' === $thumb_size && crp_get_option( 'thumb_create_sizes' ) ) {
+		$width  = crp_get_option( 'thumb_width', 150 );
+		$height = crp_get_option( 'thumb_height', 150 );
+		$crop   = crp_get_option( 'thumb_crop', true );
 
 		add_image_size( 'crp_thumbnail', $width, $height, $crop );
 	}
@@ -42,8 +48,6 @@ add_action( 'init', 'crp_add_image_sizes' );
  * @return string Output with the post thumbnail
  */
 function crp_get_the_post_thumbnail( $args = array() ) {
-
-	global $crp_settings;
 
 	$defaults = array(
 		'postid'             => '',
@@ -74,17 +78,7 @@ function crp_get_the_post_thumbnail( $args = array() ) {
 	}
 
 	$result     = get_post( $args['postid'] );
-	$post_title = get_the_title( $args['postid'] );
-
-	/**
-	 * Filters the title and alt message for thumbnails.
-	 *
-	 * @since   2.2.2
-	 *
-	 * @param   string  $post_title     Post tile used as thumbnail alt and title
-	 * @param   object  $result         Post Object
-	 */
-	$post_title = apply_filters( 'crp_thumb_title', $post_title, $result );
+	$post_title = $result->post_title;
 
 	$output    = '';
 	$postimage = '';
@@ -93,12 +87,23 @@ function crp_get_the_post_thumbnail( $args = array() ) {
 	if ( ! $postimage ) {
 		$postimage = get_post_meta( $result->ID, $args['thumb_meta'], true );
 		$pick      = 'meta';
+		if ( $postimage ) {
+			$postimage_id = crp_get_attachment_id_from_url( $postimage );
+
+			if ( false != wp_get_attachment_image_src( $postimage_id, array( $args['thumb_width'], $args['thumb_height'] ) ) ) { // phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison
+				$postthumb = wp_get_attachment_image_src( $postimage_id, array( $args['thumb_width'], $args['thumb_height'] ) );
+				$postimage = $postthumb[0];
+			}
+			$pick .= 'correct';
+		}
 	}
 
 	// If there is no thumbnail found, check the post thumbnail.
 	if ( ! $postimage ) {
 		if ( false !== get_post_thumbnail_id( $result->ID ) ) {
-			$postthumb = wp_get_attachment_image_src( get_post_thumbnail_id( $result->ID ), $crp_settings['thumb_size'] );
+			$attachment_id = ( 'attachment' === $result->post_type ) ? $result->ID : get_post_thumbnail_id( $result->ID );
+
+			$postthumb = wp_get_attachment_image_src( $attachment_id, array( $args['thumb_width'], $args['thumb_height'] ) );
 			$postimage = $postthumb[0];
 		}
 		$pick = 'featured';
@@ -127,8 +132,8 @@ function crp_get_the_post_thumbnail( $args = array() ) {
 		if ( $postimage ) {
 			$postimage_id = crp_get_attachment_id_from_url( $postimage );
 
-			if ( false !== wp_get_attachment_image_src( $postimage_id, $crp_settings['thumb_size'] ) ) {
-				$postthumb = wp_get_attachment_image_src( $postimage_id, $crp_settings['thumb_size'] );
+			if ( false !== wp_get_attachment_image_src( $postimage_id, array( $args['thumb_width'], $args['thumb_height'] ) ) ) {
+				$postthumb = wp_get_attachment_image_src( $postimage_id, array( $args['thumb_width'], $args['thumb_height'] ) );
 				$postimage = $postthumb[0];
 			}
 			$pick = 'correct';
@@ -138,7 +143,7 @@ function crp_get_the_post_thumbnail( $args = array() ) {
 
 	// If there is no thumbnail found, fetch the first child image.
 	if ( ! $postimage ) {
-		$postimage = crp_get_first_image( $result->ID );
+		$postimage = crp_get_first_image( $result->ID, $args['thumb_width'], $args['thumb_height'] );
 		$pick      = 'firstchild';
 	}
 
@@ -195,48 +200,6 @@ function crp_get_the_post_thumbnail( $args = array() ) {
 			$postimage = preg_replace( '~http://~', 'https://', $postimage );
 		}
 
-		if ( 'css' === $args['thumb_html'] ) {
-			$thumb_html = ' style="max-width:' . $args['thumb_width'] . 'px;max-height:' . $args['thumb_height'] . 'px;"';
-		} elseif ( 'html' === $args['thumb_html'] ) {
-			$thumb_html = ' width="' . $args['thumb_width'] . '" height="' . $args['thumb_height'] . '"';
-		} else {
-			$thumb_html = '';
-		}
-
-		/**
-		 * Filters the thumbnail HTML and allows a filter function to add any more HTML if needed.
-		 *
-		 * @since   2.2.0
-		 *
-		 * @param   string  $thumb_html Thumbnail HTML
-		 * @param   array   $args Argument array
-		 */
-		$thumb_html = apply_filters( 'crp_thumb_html', $thumb_html, $args );
-
-		$img_alt = ' alt="' . $post_title . '"';
-
-		/**
-		 * Filters the thumbnail alt tag.
-		 *
-		 * @since   2.5.0
-		 *
-		 * @param   string  $img_alt Thumbnail alt tag
-		 * @param   array   $args Argument array
-		 */
-		$img_alt = apply_filters( 'crp_thumb_alt', $img_alt, $args );
-
-		$img_title = ' title="' . $post_title . '"';
-
-		/**
-		 * Filters the thumbnail title tag.
-		 *
-		 * @since   2.5.0
-		 *
-		 * @param   string  $img_title Thumbnail title tag
-		 * @param   array   $args Argument array
-		 */
-		$img_title = apply_filters( 'crp_thumb_title', $img_title, $args );
-
 		$class = $args['class'] . ' crp_' . $pick;
 
 		/**
@@ -247,9 +210,32 @@ function crp_get_the_post_thumbnail( $args = array() ) {
 		 * @param   string  $thumb_html Thumbnail HTML
 		 * @param   array   $args Argument array
 		 */
-		$class = apply_filters( 'crp_thumb_class', $class, $args );
+		$attr['class'] = apply_filters( 'crp_thumb_class', $class, $args );
 
-		$output .= '<img src="' . $postimage . '"' . $img_alt . $img_title . $thumb_html . ' class="' . $class . '" />';
+		/**
+		 * Filters the thumbnail alt.
+		 *
+		 * @since 2.5.0
+		 *
+		 * @param string $post_title Thumbnail alt attribute
+		 * @param array  $args       Argument array
+		 */
+		$attr['alt'] = apply_filters( 'crp_thumb_alt', $post_title, $args );
+
+		/**
+		 * Filters the thumbnail title.
+		 *
+		 * @since 2.6.0
+		 *
+		 * @param string $post_title Thumbnail title attribute
+		 */
+		$attr['title'] = apply_filters( 'crp_thumb_title', $post_title );
+
+		$attr['thumb_html']   = $args['thumb_html'];
+		$attr['thumb_width']  = $args['thumb_width'];
+		$attr['thumb_height'] = $args['thumb_height'];
+
+		$output .= crp_get_image_html( $postimage, $attr );
 	}
 
 	/**
@@ -268,12 +254,14 @@ function crp_get_the_post_thumbnail( $args = array() ) {
  * Get the first child image in the post.
  *
  * @since 1.8.9
+ * @since 2.6.0 Added $thumb_width, $thumb_height
  *
- * @param mixed $post_id    Post ID.
+ * @param mixed $post_id      Post ID.
+ * @param int   $thumb_width  Thumb width.
+ * @param int   $thumb_height Thumb height.
  * @return string
  */
-function crp_get_first_image( $post_id ) {
-	global $crp_settings;
+function crp_get_first_image( $post_id, $thumb_width, $thumb_height ) {
 
 	$args = array(
 		'numberposts'    => 1,
@@ -288,21 +276,135 @@ function crp_get_first_image( $post_id ) {
 
 	if ( $attachments ) {
 		foreach ( $attachments as $attachment ) {
-			$image_attributes = wp_get_attachment_image_src( $attachment->ID, $crp_settings['thumb_size'] ) ? wp_get_attachment_image_src( $attachment->ID, $crp_settings['thumb_size'] ) : wp_get_attachment_image_src( $attachment->ID, 'full' );
+			$image_attributes = wp_get_attachment_image_src( $attachment->ID, array( $thumb_width, $thumb_height ) ) ? wp_get_attachment_image_src( $attachment->ID, array( $thumb_width, $thumb_height ) ) : wp_get_attachment_image_src( $attachment->ID, 'full' );
 
 			/**
 			 * Filters first child image from the post.
 			 *
-			 * @since   2.0.0
+			 * @since 2.0.0
 			 *
-			 * @param   array   $image_attributes[0]    URL of the image
-			 * @param   int     $post_id                    Post ID
+			 * @param array $image_attributes[0] URL of the image
+			 * @param int   $post_id             Post ID
+			 * @param int   $thumb_width         Thumb width
+			 * @param int   $thumb_height        Thumb height
 			 */
-			return apply_filters( 'crp_get_first_image', $image_attributes[0], $post_id );
+			return apply_filters( 'crp_get_first_image', $image_attributes[0], $post_id, $thumb_width, $thumb_height );
 		}
 	} else {
 		return false;
 	}
+}
+
+
+/**
+ * Get an HTML img element
+ *
+ * @since 2.7.0
+ *
+ * @param string $attachment_url Image URL.
+ * @param array  $attr Attributes for the image markup.
+ * @return string HTML img element or empty string on failure.
+ */
+function crp_get_image_html( $attachment_url, $attr = array() ) {
+
+	// If there is no url, return.
+	if ( '' == $attachment_url ) { // phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison
+		return;
+	}
+
+	$default_attr = array(
+		'src'          => $attachment_url,
+		'thumb_html'   => crp_get_option( 'thumb_html', 'html' ),
+		'thumb_width'  => crp_get_option( 'thumb_width', 150 ),
+		'thumb_height' => crp_get_option( 'thumb_height', 150 ),
+	);
+
+	$attr = wp_parse_args( $attr, $default_attr );
+
+	$hwstring = crp_get_image_hwstring( $attr );
+
+	// Generate 'srcset' and 'sizes' if not already present.
+	if ( empty( $attr['srcset'] ) ) {
+		$attachment_id = crp_get_attachment_id_from_url( $attachment_url );
+		$image_meta    = wp_get_attachment_metadata( $attachment_id );
+
+		if ( is_array( $image_meta ) ) {
+			$size_array = array( absint( $attr['thumb_width'] ), absint( $attr['thumb_height'] ) );
+			$srcset     = wp_calculate_image_srcset( $size_array, $attachment_url, $image_meta, $attachment_id );
+			$sizes      = wp_calculate_image_sizes( $size_array, $attachment_url, $image_meta, $attachment_id );
+
+			if ( $srcset && ( $sizes || ! empty( $attr['sizes'] ) ) ) {
+				$attr['srcset'] = $srcset;
+
+				if ( empty( $attr['sizes'] ) ) {
+					$attr['sizes'] = $sizes;
+				}
+			}
+		}
+	}
+
+	// Unset attributes we don't want to display.
+	unset( $attr['thumb_html'] );
+	unset( $attr['thumb_width'] );
+	unset( $attr['thumb_height'] );
+
+	/**
+	 * Filters the list of attachment image attributes.
+	 *
+	 * @since 2.7.0
+	 *
+	 * @param array  $attr Attributes for the image markup.
+	 * @param string $attachment_url Image URL.
+	 */
+	$attr = apply_filters( 'crp_get_image_attributes', $attr, $attachment_url );
+	$attr = array_map( 'esc_attr', $attr );
+
+	$html = '<img ' . $hwstring;
+	foreach ( $attr as $name => $value ) {
+		$html .= " $name=" . '"' . $value . '"';
+	}
+	$html .= ' />';
+
+	return apply_filters( 'crp_get_image_html', $html );
+}
+
+
+/**
+ * Retrieve width and height attributes using given width and height values.
+ *
+ * @since 2.7.0
+ *
+ * @param array $args Argument array.
+ *
+ * @return string Height-width string.
+ */
+function crp_get_image_hwstring( $args = array() ) {
+
+	$default_args = array(
+		'thumb_html'   => crp_get_option( 'thumb_html', 'html' ),
+		'thumb_width'  => crp_get_option( 'thumb_width', 150 ),
+		'thumb_height' => crp_get_option( 'thumb_height', 150 ),
+	);
+
+	$args = wp_parse_args( $args, $default_args );
+
+	if ( 'css' === $args['thumb_html'] ) {
+		$thumb_html = ' style="max-width:' . $args['thumb_width'] . 'px;max-height:' . $args['thumb_height'] . 'px;" ';
+	} elseif ( 'html' === $args['thumb_html'] ) {
+		$thumb_html = ' width="' . $args['thumb_width'] . '" height="' . $args['thumb_height'] . '" ';
+	} else {
+		$thumb_html = '';
+	}
+
+	/**
+	 * Filters the thumbnail HTML and allows a filter function to add any more HTML if needed.
+	 *
+	 * @since   2.2.0
+	 *
+	 * @param string $thumb_html Thumbnail HTML.
+	 * @param array  $args       Argument array.
+	 */
+	return apply_filters( 'crp_thumb_html', $thumb_html, $args );
 }
 
 
@@ -337,7 +439,7 @@ function crp_get_attachment_id_from_url( $attachment_url = '' ) {
 		$attachment_url = str_replace( $upload_dir_paths['baseurl'] . '/', '', $attachment_url );
 
 		// Finally, run a custom database query to get the attachment ID from the modified attachment URL.
-		$attachment_id = $wpdb->get_var( $wpdb->prepare( "SELECT wposts.ID FROM $wpdb->posts wposts, $wpdb->postmeta wpostmeta WHERE wposts.ID = wpostmeta.post_id AND wpostmeta.meta_key = '_wp_attached_file' AND wpostmeta.meta_value = %s AND wposts.post_type = 'attachment'", $attachment_url ) );
+		$attachment_id = $wpdb->get_var( $wpdb->prepare( "SELECT wposts.ID FROM $wpdb->posts wposts, $wpdb->postmeta wpostmeta WHERE wposts.ID = wpostmeta.post_id AND wpostmeta.meta_key = '_wp_attached_file' AND wpostmeta.meta_value = %s AND wposts.post_type = 'attachment'", $attachment_url ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 	}
 

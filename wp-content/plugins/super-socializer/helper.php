@@ -18,9 +18,6 @@ function the_champ_login_notifications($loginOptions){
 		if(in_array('facebook', $loginOptions['providers']) && (!isset($loginOptions['fb_key']) || $loginOptions['fb_key'] == '' || !isset($loginOptions['fb_secret']) || $loginOptions['fb_secret'] == '')){
 			$errorHtml .= the_champ_error_message('Specify Facebook App ID and Secret in <strong>Super Socializer</strong> > <strong>Social Login</strong> section in admin panel for Facebook Login to work');
 		}
-		if(in_array('xing', $loginOptions['providers']) && (!isset($loginOptions['xing_ck']) || $loginOptions['xing_ck'] == '' || !isset($loginOptions['xing_cs']) || $loginOptions['xing_cs'] == '')){
-			$errorHtml .= the_champ_error_message('Specify Xing Consumer Key and Secret in <strong>Super Socializer</strong> > <strong>Social Login</strong> section in admin panel for Xing Login to work');
-		}
 		if(in_array('twitter', $loginOptions['providers']) && (!isset($loginOptions['twitter_key']) || $loginOptions['twitter_key'] == '' || !isset($loginOptions['twitter_secret']) || $loginOptions['twitter_secret'] == '')){
 			$errorHtml .= the_champ_error_message('Specify Twitter Consumer Key and Secret in <strong>Super Socializer</strong> > <strong>Social Login</strong> section in admin panel for Twitter Login to work');
 		}
@@ -28,7 +25,7 @@ function the_champ_login_notifications($loginOptions){
 			$errorHtml .= the_champ_error_message('Specify LinkedIn Client ID and Secret in <strong>Super Socializer</strong> > <strong>Social Login</strong> section in admin panel for LinkedIn Login to work');
 		}
 		if(in_array('google', $loginOptions['providers']) && (!isset($loginOptions['google_key']) || $loginOptions['google_key'] == '' || !isset($loginOptions['google_secret']) || $loginOptions['google_secret'] == '')){
-			$errorHtml .= the_champ_error_message('Specify GooglePlus Client ID and Secret in <strong>Super Socializer</strong> > <strong>Social Login</strong> section in admin panel for GooglePlus Login to work');
+			$errorHtml .= the_champ_error_message('Specify Google Client ID and Secret in <strong>Super Socializer</strong> > <strong>Social Login</strong> section in admin panel for Google Login to work');
 		}
 		if(in_array('vkontakte', $loginOptions['providers']) && (!isset($loginOptions['vk_key']) || $loginOptions['vk_key'] == '' || !isset($loginOptions['vk_secure_key']) || $loginOptions['vk_secure_key'] == '')){
 			$errorHtml .= the_champ_error_message('Specify Vkontakte Application ID and Secret Key in <strong>Super Socializer</strong> > <strong>Social Login</strong> section in admin panel for Vkontakte Login to work');
@@ -38,9 +35,6 @@ function the_champ_login_notifications($loginOptions){
 		}
 		if(in_array('steam', $loginOptions['providers']) && (!isset($loginOptions['steam_api_key']) || $loginOptions['steam_api_key'] == '')){
 			$errorHtml .= the_champ_error_message('Specify Steam API Key in <strong>Super Socializer</strong> > <strong>Social Login</strong> section in admin panel for Steam Login to work');
-		}
-		if(in_array('twitch', $loginOptions['providers']) && (!isset($loginOptions['twitch_client_id']) || $loginOptions['twitch_client_id'] == '' || !isset($loginOptions['twitch_client_secret']) || $loginOptions['twitch_client_secret'] == '')){
-			$errorHtml .= the_champ_error_message('Specify Twitch Client ID and Secret in <strong>Super Socializer</strong> > <strong>Social Login</strong> section in admin panel for Twitch Login to work');
 		}
 	}
 	return $errorHtml;
@@ -85,7 +79,7 @@ function the_champ_social_login_page(){
  */
 function the_champ_social_sharing_page(){
 	// social sharing options
-	global $theChampSharingOptions, $theChampIsBpActive;
+	global $theChampSharingOptions, $theChampLoginOptions, $theChampIsBpActive;
 	if(!isset($theChampSharingOptions['horizontal_sharing_size'])){
 		$theChampSharingOptions['horizontal_sharing_size'] = 30;
 	}
@@ -279,7 +273,7 @@ function the_champ_ajax_response($response){
 function the_champ_notify(){
 	if(isset($_GET['message'])){
 		?>
-		<div><?php echo sanitize_text_field($_GET['message']) ?></div>
+		<div><?php echo esc_attr($_GET['message']) ?></div>
 		<?php
 	}
 	die;
@@ -495,17 +489,12 @@ if(is_multisite() && is_main_site()){
 
 function the_champ_account_linking(){
 	if(is_user_logged_in()){
-		// LiveJournal auth
-		if(isset($_GET['SuperSocializerAuth']) && sanitize_text_field($_GET['SuperSocializerAuth']) == 'LiveJournal'){
-			the_champ_livejournal_auth();
-		}
 		wp_enqueue_style('the-champ-frontend-css', plugins_url('css/front.css', __FILE__), false, THE_CHAMP_SS_VERSION);
 		global $theChampFacebookOptions, $theChampLoginOptions, $user_ID;
 		$twitterRedirect = urlencode(the_champ_get_valid_url(the_champ_get_http().$_SERVER["HTTP_HOST"] . html_entity_decode(esc_url(remove_query_arg(array('linked'))))));
 		$currentPageUrl = urldecode($twitterRedirect);
-		$theChampLJAuthUrl = remove_query_arg('action', the_champ_get_valid_url($currentPageUrl));
 		?>
-		<script>function theChampLoadEvent(e){var t=window.onload;if(typeof window.onload!="function"){window.onload=e}else{window.onload=function(){t();e()}}} var theChampCloseIconPath = '<?php echo plugins_url('images/close.png', __FILE__) ?>'; var theChampLJAuthUrl = '<?php echo $theChampLJAuthUrl . (strpos($theChampLJAuthUrl, '?') !== false ? '&' : '?') . 'SuperSocializerAuth=LiveJournal'; ?>'; var theChampLJLoginUsernameString = '<?php echo htmlspecialchars(__('Enter your LiveJournal username', 'super-socializer'), ENT_QUOTES); ?>';</script>
+		<script>function theChampLoadEvent(e){var t=window.onload;if(typeof window.onload!="function"){window.onload=e}else{window.onload=function(){t();e()}}} var theChampCloseIconPath = '<?php echo plugins_url('images/close.png', __FILE__) ?>';</script>
 		<?php
 		// general (required) scripts
 		wp_enqueue_script('the_champ_ss_general_scripts', plugins_url('js/front/social_login/general.js', __FILE__), false, THE_CHAMP_SS_VERSION);
@@ -524,7 +513,7 @@ function the_champ_account_linking(){
 			<style type="text/css">
 			#ss_openid{border:1px solid gray;display:inline;font-family:"Trebuchet MS";font-size:12px;width:98%;padding:.35em .325em .75em;margin-bottom:20px}#ss_openid form{margin-top:25px;margin-left:0;padding:0;background:transparent;-webkit-box-shadow:none;box-shadow:none}#ss_openid input{font-family:"Trebuchet MS";font-size:12px;width:100px;float:left}#ss_openid input[type=submit]{background:#767676;padding:.75em 2em;border:0;-webkit-border-radius:2px;border-radius:2px;-webkit-box-shadow:none;box-shadow:none;color:#fff;cursor:pointer;display:inline-block;font-weight:800;line-height:1;text-shadow:none;-webkit-transition:background .2s;transition:background .2s}#ss_openid legend{color:#FF6200;float:left;-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box;display:table;max-width:100%;padding:0;white-space:normal}#ss_openid input.openid_login{background-color:#fff;background-position:0 50%;color:#000;width:220px;margin-right:10px;height:30px;margin-bottom:5px;background:#fff;background-image:-webkit-linear-gradient(rgba(255,255,255,0),rgba(255,255,255,0));border:1px solid #bbb;-webkit-border-radius:3px;border-radius:3px;display:block;padding:.7em;line-height:1.5}#ss_openid a{color:silver}#ss_openid a:hover{color:#5e5e5e}
 			</style>
-			<script> var theChampLoadingImgPath = '<?php echo $loadingImagePath ?>'; var theChampAjaxUrl = '<?php echo $theChampAjaxUrl ?>'; var theChampRedirectionUrl = '<?php echo $redirectionUrl ?>'; var theChampRegRedirectionUrl = '<?php echo $regRedirectionUrl ?>', theChampSteamAuthUrl = "<?php echo $theChampSteamLogin ? $theChampSteamLogin->url( esc_url(home_url()) . '?SuperSocializerSteamAuth=' . $twitterRedirect ) : ''; ?>"; var heateorMSEnabled = 0; var theChampTwitterAuthUrl = theChampSiteUrl + "?SuperSocializerAuth=Twitter&super_socializer_redirect_to=" + theChampTwitterRedirect; var theChampFacebookAuthUrl = theChampSiteUrl + "?SuperSocializerAuth=Facebook&super_socializer_redirect_to=" + theChampTwitterRedirect; var theChampGoogleAuthUrl = theChampSiteUrl + "?SuperSocializerAuth=Google&super_socializer_redirect_to=" + theChampTwitterRedirect; var theChampVkontakteAuthUrl = theChampSiteUrl + "?SuperSocializerAuth=Vkontakte&super_socializer_redirect_to=" + theChampTwitterRedirect; var theChampTwitchAuthUrl = theChampSiteUrl + "?SuperSocializerAuth=Twitch&super_socializer_redirect_to=" + theChampTwitterRedirect; var theChampLinkedinAuthUrl = theChampSiteUrl + "?SuperSocializerAuth=Linkedin&super_socializer_redirect_to=" + theChampTwitterRedirect; var theChampXingAuthUrl = theChampSiteUrl + "?SuperSocializerAuth=Xing&super_socializer_redirect_to=" + theChampTwitterRedirect;</script>
+			<script> var theChampLoadingImgPath = '<?php echo $loadingImagePath ?>'; var theChampAjaxUrl = '<?php echo $theChampAjaxUrl ?>'; var theChampRedirectionUrl = '<?php echo $redirectionUrl ?>'; var theChampRegRedirectionUrl = '<?php echo $regRedirectionUrl ?>', theChampSteamAuthUrl = "<?php echo $theChampSteamLogin ? $theChampSteamLogin->url( esc_url(home_url()) . '?SuperSocializerSteamAuth=' . $twitterRedirect ) : ''; ?>"; var heateorMSEnabled = 0; var theChampTwitterAuthUrl = theChampSiteUrl + "?SuperSocializerAuth=Twitter&super_socializer_redirect_to=" + theChampTwitterRedirect; var theChampFacebookAuthUrl = theChampSiteUrl + "?SuperSocializerAuth=Facebook&super_socializer_redirect_to=" + theChampTwitterRedirect; var theChampGoogleAuthUrl = theChampSiteUrl + "?SuperSocializerAuth=Google&super_socializer_redirect_to=" + theChampTwitterRedirect; var theChampVkontakteAuthUrl = theChampSiteUrl + "?SuperSocializerAuth=Vkontakte&super_socializer_redirect_to=" + theChampTwitterRedirect; var theChampLinkedinAuthUrl = theChampSiteUrl + "?SuperSocializerAuth=Linkedin&super_socializer_redirect_to=" + theChampTwitterRedirect;</script>
 			<?php
 			$userVerified = false;
 			$ajaxUrl = 'admin-ajax.php';
@@ -560,7 +549,7 @@ function the_champ_account_linking(){
                         }
                         $icons_container = '<div class="the_champ_login_container">';
                         if(isset($theChampLoginOptions['gdpr_enable'])){
-							$gdprOptIn = '<div class="heateor_ss_sl_optin_container"><label><input type="checkbox" class="heateor_ss_social_login_optin" value="1" />'. str_replace($theChampLoginOptions['ppu_placeholder'], '<a href="'. $theChampLoginOptions['privacy_policy_url'] .'" target="_blank">'. $theChampLoginOptions['ppu_placeholder'] .'</a>', wp_strip_all_tags($theChampLoginOptions['privacy_policy_optin_text'])) .'</label></div>';
+							$gdprOptIn = '<div class="heateor_ss_sl_optin_container"><label><input type="checkbox" class="heateor_ss_social_login_optin" value="1" />'. str_replace(array($theChampLoginOptions['ppu_placeholder'], $theChampLoginOptions['tc_placeholder']), array('<a href="'. $theChampLoginOptions['privacy_policy_url'] .'" target="_blank">'. $theChampLoginOptions['ppu_placeholder'] .'</a>', '<a href="'. $theChampLoginOptions['tc_url'] .'" target="_blank">'. $theChampLoginOptions['tc_placeholder'] .'</a>'), wp_strip_all_tags($theChampLoginOptions['privacy_policy_optin_text'])) .'</label></div>';
 						}
 						if(isset($theChampLoginOptions['gdpr_enable']) && $theChampLoginOptions['gdpr_placement'] == 'above'){
 							$icons_container .= $gdprOptIn;
@@ -776,7 +765,7 @@ function the_champ_sharing_meta_setup(){
 		<?php
 		if(the_champ_social_sharing_enabled()){
 			global $theChampSharingOptions;
-			$validNetworks = array('facebook', 'twitter', 'linkedin', 'buffer', 'reddit', 'pinterest', 'vkontakte', 'Odnoklassniki');
+			$validNetworks = array('facebook', 'twitter', 'linkedin', 'buffer', 'reddit', 'pinterest', 'vkontakte', 'Odnoklassniki', 'Fintel');
 			if(isset($theChampSharingOptions['hor_enable']) && isset($theChampSharingOptions['horizontal_counts']) && isset($theChampSharingOptions['horizontal_re_providers']) && count($theChampSharingOptions['horizontal_re_providers']) > 0){
 				?>
 				<p>
@@ -787,7 +776,7 @@ function the_champ_sharing_meta_setup(){
 					<br/>
 					<label for="the_champ_<?php echo $sharingProvider ?>_horizontal_sharing_count">
 						<span style="width: 242px; float:left"><?php _e('Starting share count for ' . ucfirst(str_replace('_', ' ', $sharingProvider)), 'super-socializer') ?></span>
-						<input type="text" name="_the_champ_meta[<?php echo $sharingProvider ?>_horizontal_count]" id="the_champ_<?php echo $sharingProvider ?>_horizontal_sharing_count" value="<?php echo isset($sharingMeta[$sharingProvider.'_horizontal_count']) ? $sharingMeta[$sharingProvider.'_horizontal_count'] : '' ?>" />
+						<input type="text" name="_the_champ_meta[<?php echo $sharingProvider ?>_horizontal_count]" id="the_champ_<?php echo $sharingProvider ?>_horizontal_sharing_count" value="<?php echo isset($sharingMeta[$sharingProvider.'_horizontal_count']) && $sharingMeta[$sharingProvider.'_horizontal_count'] > 0 ? $sharingMeta[$sharingProvider.'_horizontal_count'] : '' ?>" />
 					</label>
 					<?php
 				}
@@ -806,7 +795,7 @@ function the_champ_sharing_meta_setup(){
 					<br/>
 					<label for="the_champ_<?php echo $sharingProvider ?>_vertical_sharing_count">
 						<span style="width: 242px; float:left"><?php _e('Starting share count for ' . ucfirst(str_replace('_', ' ', $sharingProvider)), 'super-socializer') ?></span>
-						<input type="text" name="_the_champ_meta[<?php echo $sharingProvider ?>_vertical_count]" id="the_champ_<?php echo $sharingProvider ?>_vertical_sharing_count" value="<?php echo isset($sharingMeta[$sharingProvider.'_vertical_count']) ? $sharingMeta[$sharingProvider.'_vertical_count'] : '' ?>" />
+						<input type="text" name="_the_champ_meta[<?php echo $sharingProvider ?>_vertical_count]" id="the_champ_<?php echo $sharingProvider ?>_vertical_sharing_count" value="<?php echo isset($sharingMeta[$sharingProvider.'_vertical_count']) && $sharingMeta[$sharingProvider.'_vertical_count'] > 0 ? $sharingMeta[$sharingProvider.'_vertical_count'] : '' ?>" />
 					</label>
 					<?php
 				}
@@ -839,13 +828,13 @@ function the_champ_save_sharing_meta($postId){
 			return $postId;
     	}
 	}
-    if ( isset( $_POST['_the_champ_meta'] ) ) {
+    if(isset($_POST['_the_champ_meta'])){
 		$newData = $_POST['_the_champ_meta'];
 		foreach($newData as $k => $v){
-			$newData[$k] = $v;
+			$newData[$k] = intval(sanitize_text_field(trim($v)));
 		}
 	}else{
-		$newData = array( 'sharing' => 0, 'vertical_sharing' => 0, 'counter' => 0, 'vertical_counter' => 0, 'fb_comments' => 0 );
+		$newData = array('sharing' => 0, 'vertical_sharing' => 0, 'counter' => 0, 'vertical_counter' => 0, 'fb_comments' => 0);
 	}
 	update_post_meta($postId, '_the_champ_meta', $newData);
     return $postId;
@@ -1014,7 +1003,7 @@ function heateor_ss_delete_profile_column($value, $columnName, $userId){
 		}
 	}
 }
-add_action('manage_users_custom_column', 'heateor_ss_delete_profile_column', 10, 3);
+add_action('manage_users_custom_column', 'heateor_ss_delete_profile_column', 1, 3);
 
 /**
  * Include thickbox js and css

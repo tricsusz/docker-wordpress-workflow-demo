@@ -23,6 +23,11 @@ function the_champ_sharing_shortcode($params){
 			return;
 		}
 		global $post;
+
+		if(!is_object($post)){
+	        return;
+		}
+
 		$customUrl = apply_filters('heateor_ss_custom_share_url', '', $post);
 		if($customUrl){
 			$targetUrl = $customUrl;
@@ -34,20 +39,27 @@ function the_champ_sharing_shortcode($params){
 			$targetUrl = esc_url(home_url());
 			$postId = 0;
 		}elseif(!is_singular() && $type == 'vertical'){
-			$targetUrl = html_entity_decode(esc_url(the_champ_get_http().$_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"]));
+			$targetUrl = html_entity_decode(esc_url(the_champ_get_http().$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"]));
 			$postId = 0;
 		}elseif(isset($_SERVER['QUERY_STRING']) && $_SERVER['QUERY_STRING']){
-			$targetUrl = html_entity_decode(esc_url(the_champ_get_http().$_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"]));
+			$targetUrl = html_entity_decode(esc_url(the_champ_get_http().$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"]));
 			$postId = $post -> ID;
 		}elseif(get_permalink($post -> ID)){
 			$targetUrl = get_permalink($post -> ID);
 			$postId = $post -> ID;
 		}else{
-			$targetUrl = html_entity_decode(esc_url(the_champ_get_http().$_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"]));
+			$targetUrl = html_entity_decode(esc_url(the_champ_get_http().$_SERVER["HTTP_HOST"].$_SERVER["REQUEST_URI"]));
 			$postId = 0;
 		}
-
-		$targetUrl = heateor_ss_apply_target_share_url_filter($targetUrl, $type, false);
+		$shareCountUrl = $targetUrl;
+		if($url == '' && is_singular()){
+			$shareCountUrl = get_permalink($post->ID);
+		}
+		$customPostUrl = heateor_ss_apply_target_share_url_filter($targetUrl, $type, false);
+		if($customPostUrl != $targetUrl){
+			$targetUrl = $customPostUrl;
+			$shareCountUrl = $targetUrl;
+		}
 		// if bit.ly url shortener enabled, generate bit.ly short url
 		$shortUrl = '';
 		if(isset($theChampSharingOptions['use_shortlinks']) && function_exists('wp_get_shortlink')){
@@ -64,7 +76,7 @@ function the_champ_sharing_shortcode($params){
 		}
 		$shareCountTransientId = heateor_ss_get_share_count_transient_id($targetUrl);
 		$cachedShareCount = heateor_ss_get_cached_share_count($shareCountTransientId);
-		$html = '<div class="the_champ_sharing_container the_champ_'.$type.'_sharing' . ( $type == 'vertical' && isset( $theChampSharingOptions['hide_mobile_sharing'] ) ? ' the_champ_hide_sharing' : '' ) . ( $type == 'vertical' && isset( $theChampSharingOptions['bottom_mobile_sharing'] ) ? ' the_champ_bottom_sharing' : '' ) . '" ' . ( the_champ_is_amp_page() ? '' : 'ss-offset="' . $alignmentOffset . '" ' ) . ( the_champ_is_amp_page() ? '' : 'super-socializer-data-href="' . $targetUrl . '"' ) . ( $cachedShareCount === false || the_champ_is_amp_page() ? "" : 'super-socializer-no-counts="1" ' );
+		$html = '<div class="the_champ_sharing_container the_champ_'.$type.'_sharing' . ($type == 'vertical' && isset($theChampSharingOptions['hide_mobile_sharing']) ? ' the_champ_hide_sharing' : '') . ($type == 'vertical' && isset($theChampSharingOptions['bottom_mobile_sharing']) ? ' the_champ_bottom_sharing' : '') . '" ' . (the_champ_is_amp_page() ? '' : 'ss-offset="' . $alignmentOffset . '" ') . (the_champ_is_amp_page() ? '' : 'super-socializer-data-href="' . (isset($shareCountUrl) && $shareCountUrl ? $shareCountUrl : $targetUrl) . '"') . ($cachedShareCount === false || the_champ_is_amp_page() ? "" : 'super-socializer-no-counts="1" ');
 		$verticalOffsets = '';
 		if($type == 'vertical'){
 			$verticalOffsets = $align . ': '.$$align.'px; top: '.$top.'px;width:' . ((isset($theChampSharingOptions['vertical_sharing_size']) ? $theChampSharingOptions['vertical_sharing_size'] : '35') + 4) . "px;";
@@ -78,10 +90,10 @@ function the_champ_sharing_shortcode($params){
 			$html .= '"';
 		}
 		$html .= '>';
-		if( $type == 'horizontal' && $title != '' ) {
-			$html .= '<div style="font-weight:bold" class="the_champ_sharing_title">' . ucfirst( $title ) . '</div>';
+		if($type == 'horizontal' && $title != ''){
+			$html .= '<div style="font-weight:bold" class="the_champ_sharing_title">' . ucfirst($title) . '</div>';
 		}
-		$html .= the_champ_prepare_sharing_html($shortUrl == '' ? $targetUrl : $shortUrl, $type, $count, $total_shares == 'ON' ? 1 : 0, $shareCountTransientId);
+		$html .= the_champ_prepare_sharing_html($shortUrl == '' ? $targetUrl : $shortUrl, $shareCountUrl, $type, $count, $total_shares == 'ON' ? 1 : 0, $shareCountTransientId);
 		$html .= '</div>';
 		if(($count || $total_shares == 'ON') && $cachedShareCount === false){
 			$html .= '<script>theChampLoadEvent(function(){theChampCallAjax(function(){theChampGetSharingCounts();});});</script>';
@@ -111,6 +123,10 @@ function the_champ_counter_shortcode($params){
 			return;
 		}
 		global $post;
+		if(!is_object($post)){
+	        return;
+		}
+		
 		$customUrl = apply_filters('heateor_ss_custom_share_url', '', $post);
 		if($customUrl){
 			$targetUrl = $customUrl;
@@ -142,7 +158,7 @@ function the_champ_counter_shortcode($params){
 			$alignmentOffset = $right;
 		}
 		global $theChampCounterOptions;
-		$html = '<div class="the_champ_counter_container the_champ_'.$type.'_counter' . ( $type == 'vertical' && isset( $theChampCounterOptions['hide_mobile_likeb'] ) ? ' the_champ_hide_sharing' : '' ) . '" ' . ( the_champ_is_amp_page() ? '' : 'ss-offset="' . $alignmentOffset . '" ' );
+		$html = '<div class="the_champ_counter_container the_champ_'.$type.'_counter' . ($type == 'vertical' && isset($theChampCounterOptions['hide_mobile_likeb']) ? ' the_champ_hide_sharing' : '') . '" ' . (the_champ_is_amp_page() ? '' : 'ss-offset="' . $alignmentOffset . '" ');
 		$verticalOffsets = '';
 		if($type == 'vertical'){
 			$verticalOffsets = $align . ': '.$$align.'px; top: '.$top.'px;';
@@ -156,8 +172,8 @@ function the_champ_counter_shortcode($params){
 			$html .= '"';
 		}
 		$html .= '>';
-		if( $type == 'horizontal' && $title != '' ) {
-			$html .= '<div style="font-weight:bold" class="the_champ_counter_title">' . ucfirst( $title ) . '</div>';
+		if($type == 'horizontal' && $title != ''){
+			$html .= '<div style="font-weight:bold" class="the_champ_counter_title">' . ucfirst($title) . '</div>';
 		}
 		$counterUrl = $targetUrl;
 		if(isset($theChampCounterOptions['use_shortlinks']) && function_exists('wp_get_shortlink')){
@@ -184,6 +200,7 @@ function the_champ_login_shortcode($params){
 		extract(shortcode_atts(array(
 			'style' => '',
 			'title' => '',
+			'redirect_url' => '',
 			'show_username' => 'OFF'
 		), $params));
 		if($show_username == 'ON' && is_user_logged_in()){
@@ -210,6 +227,9 @@ function the_champ_login_shortcode($params){
 			}
 			$html .= the_champ_login_button(true);
 			$html .= '</div><div style="clear:both"></div>';
+			if($redirect_url){
+				$html .= '<script type="text/javascript">theChampCustomRedirect = encodeURI("'. $redirect_url .'");var theChampSteamAuthUrl = ""; var theChampTwitterAuthUrl = theChampSiteUrl + "?SuperSocializerAuth=Twitter&super_socializer_redirect_to=" + theChampCustomRedirect; var theChampFacebookAuthUrl = theChampSiteUrl + "?SuperSocializerAuth=Facebook&super_socializer_redirect_to=" + theChampCustomRedirect; var theChampGoogleAuthUrl = theChampSiteUrl + "?SuperSocializerAuth=Google&super_socializer_redirect_to=" + theChampCustomRedirect; var theChampVkontakteAuthUrl = theChampSiteUrl + "?SuperSocializerAuth=Vkontakte&super_socializer_redirect_to=" + theChampCustomRedirect; var theChampLinkedinAuthUrl = theChampSiteUrl + "?SuperSocializerAuth=Linkedin&super_socializer_redirect_to=" + theChampCustomRedirect;</script>';
+			}
 		}
 		return $html;
 	}
@@ -244,7 +264,7 @@ function the_champ_fb_commenting_shortcode($params){
     $html .= ' data-numposts="' . $num_posts . '"';
     $html .= ' data-width="' . ($width == '' ? '100%' : $width) . '"';
     $html .= ' ></div></div><script type="text/javascript" src="//connect.facebook.net/' . $language . '/sdk.js
-    "></script><script>FB.init({xfbml:1,version: "v2.11"});</script>';
+    "></script><script>FB.init({xfbml:1,version: "v3.2"});</script>';
     if(defined('HEATEOR_FB_COM_NOT_VERSION') && version_compare('1.1.5', HEATEOR_FB_COM_NOT_VERSION) < 0){
 	    $html .= '<script type="text/javascript">jQuery(window).load(function(){"undefined"!=typeof theChampFacebookCommentsNotifierOptinText&&(null!=heateorFcnGetCookie("heateorFcnOptin")&&jQuery("input.heateor_ss_fb_comments_notifier_optin").prop("checked",!0),jQuery("input.heateor_ss_fb_comments_notifier_optin").click(function(){if(jQuery(this).is(":checked")){if(heateorFcnOptin=1,null==heateorFcnGetCookie("heateorFcnOptin")){var e=new Date;e.setTime(e.getTime()+31536e6),document.cookie="heateorFcnOptin=1; expires="+e.toUTCString()+"; path=/"}}else heateorFcnOptin=0,document.cookie="heateorFcnOptin=; expires=Fri, 02 Jan 1970 00:00:00 UTC; path=/"}));});</script>';
 	}
@@ -254,26 +274,6 @@ function the_champ_fb_commenting_shortcode($params){
 	return $html;
 }
 add_shortcode('TheChamp-FB-Comments', 'the_champ_fb_commenting_shortcode');
-
-/** 
- * Shortcode for GooglePlus Comments.
- */ 
-function the_champ_gp_commenting_shortcode($params){
-	extract(shortcode_atts(array(
-		'style' => '',
-		'url' => get_permalink(),
-		'width' => '',
-		'title' => ''
-	), $params));
-	$html = '<div style="'. $style .'" id="the_champ_gp_commenting">';
-	if( $title != '' ) {
-		$html .= '<div style="font-weight:bold">' . ucfirst( $title ) . '</div>';
-	}
-    $html .= "<div class='g-comments' data-href='" . ($url == '' ? html_entity_decode(esc_url(the_champ_get_http().$_SERVER["HTTP_HOST"] . $_SERVER["REQUEST_URI"])) : $url) . "' ". ($width ? "data-width='" .$width. "'" : "" ) ." data-first_party_property='BLOGGER' data-view_type='FILTERED_POSTMOD' ></div>";
-    $html .= '</div><script type="text/javascript" src="//apis.google.com/js/plusone.js"></script>';
-	return $html;
-}
-add_shortcode('TheChamp-GP-Comments', 'the_champ_gp_commenting_shortcode');
 
 /** 
  * Shortcode for Social account linking

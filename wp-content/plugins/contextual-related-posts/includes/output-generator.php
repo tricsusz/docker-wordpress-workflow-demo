@@ -6,7 +6,7 @@
  * @author    Ajay D'Souza
  * @license   GPL-2.0+
  * @link      https://webberzone.com
- * @copyright 2009-2018 Ajay D'Souza
+ * @copyright 2009-2019 Ajay D'Souza
  */
 
 // If this file is called directly, abort.
@@ -194,7 +194,7 @@ function crp_after_list_item( $args, $result ) {
  */
 function crp_title( $args, $result ) {
 
-	$title = crp_trim_char( get_the_title( $result->ID ), $args['title_length'] );  // Get the post title and crop it if needed.
+	$title = crp_trim_char( $result->post_title, $args['title_length'] );  // Get the post title and crop it if needed.
 
 	/**
 	 * Filter the title of each list item.

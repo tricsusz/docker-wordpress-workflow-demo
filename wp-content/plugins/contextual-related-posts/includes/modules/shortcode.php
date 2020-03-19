@@ -7,7 +7,7 @@
  * @author    Ajay D'Souza
  * @license   GPL-2.0+
  * @link      https://webberzone.com
- * @copyright 2009-2018 Ajay D'Souza
+ * @copyright 2009-2019 Ajay D'Souza
  */
 
 // If this file is called directly, abort.
@@ -22,9 +22,9 @@ if ( ! defined( 'WPINC' ) ) {
  *
  * @param   array  $atts   Shortcode attributes.
  * @param   string $content Post content.
- * @return  Related Posts
+ * @return  string Related Posts
  */
-function crp_shortcode( $atts, $content = null ) {
+function crp_shortcode( $atts, $content = null ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 	global $crp_settings;
 
 	$atts = shortcode_atts(

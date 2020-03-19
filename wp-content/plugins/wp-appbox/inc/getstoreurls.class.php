@@ -4,19 +4,19 @@
 /* ID => Bezeichnung */
 $wpAppbox_storeURL_languages = array(
 	'0' => __('Use own URL', 'wp-appbox'),
-	'1' => array( 'code' => 'de-DE', 'name' =>__('Germany', 'wp-appbox') ),
-	'2' => array( 'code' => 'en-US', 'name' =>__('United States', 'wp-appbox') ),
-	'3' => array( 'code' => 'en-GB', 'name' =>__('United Kingdom', 'wp-appbox') ),
-	'4' => array( 'code' => 'fr-FR', 'name' =>__('France', 'wp-appbox') ),
-	'5' => array( 'code' => 'es-ES', 'name' =>__('Spain', 'wp-appbox') ),
-	'6' => array( 'code' => 'ru-RU', 'name' =>__('Russia', 'wp-appbox') ),
-	'7' => array( 'code' => 'tr-TR', 'name' =>__('Turkey', 'wp-appbox') ),
-	'8' => array( 'code' => 'it-IT', 'name' =>__('Italy', 'wp-appbox') ),
-	'9' => array( 'code' => 'de-AT', 'name' =>__('Austria', 'wp-appbox') ),
-	'10' => array( 'code' => 'de-CH', 'name' =>__('Switzerland', 'wp-appbox') ),
-	'11' => array( 'code' => 'ja', 'name' =>__('Japan', 'wp-appbox') ),
-	'12' => array( 'code' => 'pl-PL', 'name' =>__('Poland', 'wp-appbox') ),
-	'13' => array( 'code' => 'en-AU', 'name' =>__('Australia', 'wp-appbox') )
+	'1' => array( 'code' => 'de-DE', 'name' =>__( 'Germany', 'wp-appbox' ) ),
+	'2' => array( 'code' => 'en-US', 'name' =>__( 'United States', 'wp-appbox' ) ),
+	'3' => array( 'code' => 'en-GB', 'name' =>__( 'United Kingdom', 'wp-appbox' ) ),
+	'4' => array( 'code' => 'fr-FR', 'name' =>__( 'France', 'wp-appbox' ) ),
+	'5' => array( 'code' => 'es-ES', 'name' =>__( 'Spain', 'wp-appbox' ) ),
+	'6' => array( 'code' => 'ru-RU', 'name' =>__( 'Russia', 'wp-appbox' ) ),
+	'7' => array( 'code' => 'tr-TR', 'name' =>__( 'Turkey', 'wp-appbox' ) ),
+	'8' => array( 'code' => 'it-IT', 'name' =>__( 'Italy', 'wp-appbox' ) ),
+	'9' => array( 'code' => 'de-AT', 'name' =>__( 'Austria', 'wp-appbox' ) ),
+	'10' => array( 'code' => 'de-CH', 'name' =>__( 'Switzerland', 'wp-appbox' ) ),
+	'11' => array( 'code' => 'ja', 'name' =>__( 'Japan', 'wp-appbox' ) ),
+	'12' => array( 'code' => 'pl-PL', 'name' =>__( 'Poland', 'wp-appbox' ) ),
+	'13' => array( 'code' => 'en-AU', 'name' =>__( 'Australia', 'wp-appbox') )
 );
 	
 	
@@ -26,44 +26,44 @@ $wpAppbox_storeURL_noLanguages = array( 'wordpress', 'goodoldgames', 'xda' );
 	
 /* Regionen für die Amazon Product Advertising API */
 $wpAppbox_amaAPIregions = array(
-	__('Brazil', 'wp-appbox') => 'com.br',
-	__('Canada', 'wp-appbox') => 'ca',
-	__('China', 'wp-appbox') => 'cn',
-	__('France', 'wp-appbox') => 'fr',
-	__('Germany', 'wp-appbox') => 'de',
-	__('India', 'wp-appbox') => 'in',
-	__('Italy', 'wp-appbox') => 'it',
-	__('Japan', 'wp-appbox') => 'co.jp',
-	__('Mexico', 'wp-appbox') => 'com.mx',
-	__('Spain', 'wp-appbox') => 'es',
-	__('United Kingdom', 'wp-appbox') => 'co.uk',
-	__('United States', 'wp-appbox') => 'com'
+	__( 'Brazil', 'wp-appbox' ) => 'com.br',
+	__( 'Canada', 'wp-appbox' ) => 'ca',
+	__( 'China', 'wp-appbox' ) => 'cn',
+	__( 'France', 'wp-appbox' ) => 'fr',
+	__( 'Germany', 'wp-appbox' ) => 'de',
+	__( 'India', 'wp-appbox' ) => 'in',
+	__( 'Italy', 'wp-appbox' ) => 'it',
+	__( 'Japan', 'wp-appbox' ) => 'co.jp',
+	__( 'Mexico', 'wp-appbox' ) => 'com.mx',
+	__( 'Spain', 'wp-appbox' ) => 'es',
+	__( 'United Kingdom', 'wp-appbox' ) => 'co.uk',
+	__( 'United States', 'wp-appbox' ) => 'com'
 );
 	
 	
 /* Die URLs der Stores und Länder */
 $wpAppbox_storeURL = array(	
 	'amazonapps' => array(
-		'1' => 'https://www.amazon.de/gp/product/{APPID}/?ie=UTF8',
-		'2' => 'https://www.amazon.com/gp/product/{APPID}/?ie=UTF8',
-		'3' => 'https://www.amazon.co.uk/gp/product/{APPID}/?ie=UTF8',
-		'4' => 'https://www.amazon.fr/gp/product/{APPID}/?ie=UTF8',
-		'5' => 'https://www.amazon.es/gp/product/{APPID}/?ie=UTF8',
-		'8' => 'https://www.amazon.it/gp/product/{APPID}/?ie=UTF8',
-		'11' => 'https://www.amazon.co.jp/gp/product/{APPID}/?ie=UTF8'
+		'1' => 'https://www.amazon.de/gp/product/{APPID}',
+		'2' => 'https://www.amazon.com/gp/product/{APPID}',
+		'3' => 'https://www.amazon.co.uk/gp/product/{APPID}',
+		'4' => 'https://www.amazon.fr/gp/product/{APPID}',
+		'5' => 'https://www.amazon.es/gp/product/{APPID}',
+		'8' => 'https://www.amazon.it/gp/product/{APPID}',
+		'11' => 'https://www.amazon.co.jp/gp/product/{APPID}'
 	),
 	'appstore' => array(
-		'1' => 'https://itunes.apple.com/de/app/id{APPID}',
-		'2' => 'https://itunes.apple.com/app/id{APPID}',
-		'3' => 'https://itunes.apple.com/gb/app/id{APPID}',
-		'4' => 'https://itunes.apple.com/fr/app/id{APPID}',
-		'5' => 'https://itunes.apple.com/es/app/id{APPID}',
-		'6' => 'https://itunes.apple.com/ru/app/id{APPID}',
-		'7' => 'https://itunes.apple.com/tr/app/id{APPID}',
-		'8' => 'https://itunes.apple.com/it/app/id{APPID}',
-		'9' => 'https://itunes.apple.com/at/app/id{APPID}',
-		'10' => 'https://itunes.apple.com/ch/app/id{APPID}',
-		'11' => 'https://itunes.apple.com/jp/app/id{APPID}'
+		'1' => 'https://apps.apple.com/de/app/id{APPID}',
+		'2' => 'https://apps.apple.com/app/id{APPID}',
+		'3' => 'https://apps.apple.com/gb/app/id{APPID}',
+		'4' => 'https://apps.apple.com/fr/app/id{APPID}',
+		'5' => 'https://apps.apple.com/es/app/id{APPID}',
+		'6' => 'https://apps.apple.com/ru/app/id{APPID}',
+		'7' => 'https://apps.apple.com/tr/app/id{APPID}',
+		'8' => 'https://apps.apple.com/it/app/id{APPID}',
+		'9' => 'https://apps.apple.com/at/app/id{APPID}',
+		'10' => 'https://apps.apple.com/ch/app/id{APPID}',
+		'11' => 'https://apps.apple.com/jp/app/id{APPID}'
 	),
 	'chromewebstore' => array(
 		'1' => 'https://chrome.google.com/webstore/detail/{APPID}?hl=de',
@@ -123,17 +123,17 @@ $wpAppbox_storeURL = array(
 		'11' => 'https://store.steampowered.com/api/appdetails/?appids={APPID}&cc=jp&l=japanese'
 	),
 	'windowsstore' => array(
-		'1' => 'https://www.microsoft.com/de-de/store/p/app/{APPID}',
-		'2' => 'https://www.microsoft.com/en-us/store/p/app/{APPID}',
-		'3' => 'https://www.microsoft.com/en-gb/store/p/app/{APPID}',
-		'4' => 'https://www.microsoft.com/fr-fr/store/p/app/{APPID}',
-		'5' => 'https://www.microsoft.com/es-es/store/p/app/{APPID}',
-		'6' => 'https://www.microsoft.com/ru-ru/store/p/app/{APPID}',
-		'7' => 'https://www.microsoft.com/tr-tr/store/p/app/{APPID}',
-		'8' => 'https://www.microsoft.com/it-it/store/p/app/{APPID}',
-		'9' => 'https://www.microsoft.com/de-at/store/p/app/{APPID}',
-		'10' => 'https://www.microsoft.com/de-ch/store/p/app/{APPID}',
-		'12' => 'https://www.microsoft.com/pl-pl/store/p/app/{APPID}'
+		'1' => 'https://www.microsoft.com/de-de/p/app/{APPID}',
+		'2' => 'https://www.microsoft.com/en-us/p/app/{APPID}',
+		'3' => 'https://www.microsoft.com/en-gb/p/app/{APPID}',
+		'4' => 'https://www.microsoft.com/fr-fr/p/app/{APPID}',
+		'5' => 'https://www.microsoft.com/es-es/p/app/{APPID}',
+		'6' => 'https://www.microsoft.com/ru-ru/p/app/{APPID}',
+		'7' => 'https://www.microsoft.com/tr-tr/p/app/{APPID}',
+		'8' => 'https://www.microsoft.com/it-it/p/app/{APPID}',
+		'9' => 'https://www.microsoft.com/de-at/p/app/{APPID}',
+		'10' => 'https://www.microsoft.com/de-ch/p/app/{APPID}',
+		'12' => 'https://www.microsoft.com/pl-pl/p/app/{APPID}'
 	),
 	'wordpress' => array(
 		'1' => 'https://wordpress.org/plugins/{APPID}/'

@@ -29,10 +29,6 @@ function wpAppbox_googleplay_button() {
 	return "[appbox googleplay " + tinyMCE.activeEditor.selection.getContent() + "]";
 }
 
-function wpAppbox_itunes_button() {
-	return "[appbox itunes " + tinyMCE.activeEditor.selection.getContent() + "]";
-}
-
 function wpAppbox_operaaddons_button() {
 	return "[appbox operaaddons " + tinyMCE.activeEditor.selection.getContent() + "]";
 }

@@ -255,6 +255,7 @@ function wpAppbox_resetBlockedQueries() {
 * Die n abgelaufenen App-Daten zurückgeben
 *
 * @since   4.0.0
+* @change  4.1.26
 *
 * @output  function  errorOutput()  Fehlermeldung
 */
@@ -262,6 +263,7 @@ function wpAppbox_resetBlockedQueries() {
 function wpAppbox_cacheCron() {
 	if ( !defined( 'DOING_CRON' ) ) return;
 	global $wpdb, $wpAppbox_optionsDefault;
+	$currentStore = '';
 	$cronCount = get_option( 'wpAppbox_cronCount' );
 	if ( '0' == $cronCount ) return;
 	if ( !is_int( intval( $cronCount ) ) ) {
@@ -275,23 +277,23 @@ function wpAppbox_cacheCron() {
 		return;
 	}
 	$appArray = array();
-	foreach ( $appList as $appData ) {
+	foreach ( $appList as $appData ):
 		$dataArray = array(
 			'id' => $appData->id,
 			'app_id' => $appData->app_id,
 			'store_name_css' => $appData->store_name_css
 		);
 		array_push( $appArray, $dataArray );
-	}
+	endforeach;
 	$currentStore = '';
-	foreach ( $appArray as $appData ) {
+	foreach ( $appArray as $appData ):
+		if ( $currentStore == $storeNameCSS ) sleep( 5 );
 		$appID = $appData['app_id'];
 		$storeNameCSS = ('macappstore' == $appData['store_name_css']) ? 'appstore' : $appData['store_name_css'];
 		$appCache = new wpAppbox_GetAppInfoAPI;
 		$appCache = $appCache->getTheAppData( $storeNameCSS, $appID, true );
-		if ( $currentStore == $storeNameCSS ) usleep( 2000 );
 		$currentStore = $storeNameCSS;
-	}
+	endforeach;
 	wpAppbox_errorOutput( "function: wpAppbox_cacheCron() ---> Cron was fired" );
 }
 

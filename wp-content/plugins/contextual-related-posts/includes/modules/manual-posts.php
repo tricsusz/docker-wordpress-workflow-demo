@@ -7,7 +7,7 @@
  * @author    Ajay D'Souza
  * @license   GPL-2.0+
  * @link      https://webberzone.com
- * @copyright 2009-2018 Ajay D'Souza
+ * @copyright 2009-2019 Ajay D'Souza
  */
 
 // If this file is called directly, abort.
@@ -28,7 +28,7 @@ function crp_manual_posts( $results ) {
 
 	$crp_post_meta = get_post_meta( $post->ID, 'crp_post_meta', true );
 
-	if ( isset( $crp_post_meta['manual_related'] ) && ( '' != $crp_post_meta['manual_related'] ) ) {
+	if ( isset( $crp_post_meta['manual_related'] ) && ( '' != $crp_post_meta['manual_related'] ) ) { // phpcs:ignore WordPress.PHP.StrictComparisons.LooseComparison
 
 		// Fields to return.
 		$fields = " $wpdb->posts.ID ";
@@ -43,7 +43,7 @@ function crp_manual_posts( $results ) {
 				AND {$wpdb->posts}.ID IN ({$crp_post_meta['manual_related']})
 				ORDER BY FIELD({$wpdb->posts}.ID,{$crp_post_meta['manual_related']})";
 
-		$results1 = $wpdb->get_results( $sql );
+		$results1 = $wpdb->get_results( $sql ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared
 
 		$results = (object) array_merge( (array) $results1, (array) $results );
 
